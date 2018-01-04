@@ -1,0 +1,12 @@
+{
+    MD_AVAILABILITY: jumlah kuota,
+    TS_MULAI: (tidak terpakai),
+    MD_IDOFFICE: id kantor,
+    MD_MULAI: waktu mulai dengan format inkonsisten, terkadang 8, 800, atau 0800,
+    MD_TID: id waktu/sesi,
+    MT_TANGGAL: tanggal,
+    MD_QUOTA: kuota pada waktu tersebut,
+    TS_SELESAI: (tidak terpakai),
+    MD_ID: suatu id lain, nilainya MD_TID - 3732,
+    MD_SELESAI: waktu selesai dengan format inkonsisten, terkadang 9, 900, atau 0900
+}

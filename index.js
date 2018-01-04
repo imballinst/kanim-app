@@ -77,6 +77,7 @@ const getAvailabilityInfo = (cookie, token, kanimID, startDate, endDate) => axio
 // Main
 let cookieContainer;
 let tokenContainer;
+let kanimsContainer;
 
 axios({
   method: 'get',
@@ -89,15 +90,17 @@ axios({
   const parsedJSON = JSON.parse(res.data);
   tokenContainer = parsedJSON.Token;
 
-  // const kanimID = 1;
-  // const startDate = '2018-1-4';
-  // const endDate = '2018-3-5';
-
-  // return getAvailabilityInfo(cookieContainer, tokenContainer, kanimID, startDate, endDate);
-
   return getListKanim(cookieContainer);
 }).then((res) => {
-  console.log(JSON.stringify(res.data));
+  kanimsContainer = res.data.Offices;
+
+  const kanimID = 20;
+  const startDate = '2018-1-4';
+  const endDate = '2018-3-5';
+
+  return getAvailabilityInfo(cookieContainer, tokenContainer, kanimID, startDate, endDate);
+}).then((res) => {
+  console.log(res.data);
 }).catch((err) => {
   console.log(err);
 });
