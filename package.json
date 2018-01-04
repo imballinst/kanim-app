@@ -1,0 +1,19 @@
+{
+  "name": "kanim",
+  "version": "1.0.0",
+  "description": "aplikasi untuk notifikasi antrian kanim",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Try Ajitiono",
+  "license": "MIT",
+  "keywords": [
+    "kanim",
+    "notifikasi"
+  ],
+  "dependencies": {
+    "axios": "^0.17.1",
+    "dotenv": "^4.0.0"
+  }
+}
