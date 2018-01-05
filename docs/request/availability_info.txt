@@ -8,3 +8,5 @@ Body:
     START_DATE: "2018-1-4",
     END_DATE: "2018-1-5",
 }
+
+Keterangan: (startDate, endDate], artinya startDate nggak di-include, tetapi endDate di-include

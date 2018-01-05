@@ -1,0 +1,100 @@
+{
+  "plugins": [
+    "react",
+    "babel"
+  ],
+  "extends": ["airbnb"],
+  "parser": "babel-eslint",
+  "parserOptions": {
+    "ecmaVersion": 6,
+    "sourceType": "module",
+    "ecmaFeatures": {
+      "jsx": true
+    }
+  },
+  "rules": {
+    "semi": 2,
+    "react/jsx-filename-extension": [1, { "extensions": [".js", ".jsx"] }],
+    "react/forbid-prop-types": [0, { "forbid": [] }],
+    "curly": [
+      2,
+      "all"
+    ],
+    "no-param-reassign": [2, {
+      "props": false
+    }],
+    "operator-linebreak": [
+      2,
+      "after"
+    ],
+    "camelcase": [
+      2,
+      {
+        "properties": "never"
+      }
+    ],
+    "comma-dangle": ["error", {
+      "arrays": "always-multiline",
+      "objects": "always-multiline",
+      "imports": "always-multiline",
+      "exports": "always-multiline",
+      "functions": "never"
+    }],
+    "no-multi-str": 2,
+    "no-mixed-spaces-and-tabs": 2,
+    "no-trailing-spaces": 2,
+    "space-unary-ops": [
+      2,
+      {
+        "nonwords": false,
+        "overrides": {}
+      }
+    ],
+    "keyword-spacing": [
+      2,
+      {}
+    ],
+    "space-infix-ops": 2,
+    "space-before-blocks": [
+      2,
+      "always"
+    ],
+    "eol-last": 2,
+    "space-in-parens": [
+      2,
+      "never"
+    ],
+    "no-multiple-empty-lines": 2,
+    "max-len": [
+      2,
+      100,
+      2,
+      {
+        "ignoreRegExpLiterals": true,
+        "ignoreStrings": true,
+        "ignoreComments": true
+      }
+    ],
+    "no-unused-vars": [
+      "error",
+      {
+        "vars": "all",
+        "args": "all",
+        "ignoreRestSiblings": true,
+        "argsIgnorePattern": "^_"
+    }]
+  },
+  "globals": {
+    "document": true,
+    "quoteHash": true,
+    "location": true,
+    "window": true,
+    "grecaptcha": true,
+    "$": true,
+    "dict": true,
+    "FileReader": true,
+    "FormData": true,
+    "Image": true,
+    "ga": true
+  }
+}
