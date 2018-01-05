@@ -1,0 +1,38 @@
+{
+   "Message":null,
+   "Queues":[
+      {
+         "MU_ALAMAT":null,
+         "StartHour":1300,
+         "MP_NAME":null,
+         "MP_NAME_IN":null,
+         "MT_TANGGAL":null,
+         "MQ_CREATED_DATE":"Jan 5, 2018 9:37:37 AM",
+         "IS_ACTIVE":true,
+         "MO_CLASS":null,
+         "NO_ANTRIAN":"AD-QFJ8BD",
+         "ProvinceName":"West Java",
+         "MQ_UID":123412341234,
+         "STATUS":0,
+         "ServiceDate":"Jan 31, 2018",
+         "ProvinceId":10,
+         "data_qr":"F9vVhsO5beLpYzmuaVAUcmytgihfPZfyvQ+lmoUIK45eyubLdz2U2F5tBWEicr1a27XXAOkLKJAIf3m36DYKftEu2oemASR/3Qt8A/MAglE6CW71rj63RsQ6cmgWcbXrDBy0aJq0TQXjkDh6c6LOx/LWCeoijIOtT+hhkEA5LE2bsGbN1hD3JN7xzVwql1VPVKrpquR+si3vCF/D0AGXKMK9N+jgYsUXzVOqos1Qn0p3TSsbhWPGaaWh0T/lJ60q2EYBYKOMa2AmHX73y92O7mveIUvzFInuWkLyKtvfDY0AwETNEd+cvcNlb7PPoWnpqdMPtgVeqSRLNhIMT15kzzrp/Ye1afwfHgOy5u76juBjMmuX8ME2QS2Qk73eJueg",
+         "EndHour":1400,
+         "MQ_TDID":39108,
+         "MU_EMAIL":null,
+         "MO_ADDRESS":"Jl. Surapati No.82 RT/RW.010/06 Kel.Cihaurgeulis, Kec.Cibeunying, Bandung, Jawa Barat, 40122",
+         "KET_PENGANTRI":"",
+         "MO_NAME":null,
+         "NAMA_PENGANTRI":"hehe",
+         "OfficeId":29,
+         "MU_USERNAME":null,
+         "NIK_PENGANTRI":"1234123412341234",
+         "MT_MULAI":null,
+         "MQ_ID":541235,
+         "MT_SELESAI":null,
+         "UserId":null,
+         "OfficeName":"Kantor Imigrasi Bandung"
+      }
+   ],
+   "Success":true
+}

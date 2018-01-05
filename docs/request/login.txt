@@ -1,0 +1,9 @@
+URL: https://antrian.imigrasi.go.id/Layanan/rest/Authentication.jsp
+Method: POST
+Body:
+
+{
+    Username: "username",
+    Password: "password",
+}
+

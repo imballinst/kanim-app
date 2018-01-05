@@ -1,0 +1,18 @@
+{
+   Message:{
+      "MU_ID":123412341234,
+      "MU_USERNAME":"testusername",
+      "MU_PASSWORD":"testpassword",
+      "MU_TELEPHONE":"0123456789",
+      "MU_EMAIL":"hahaa@gmail.com",
+      "MU_ALAMAT":"earth",
+      "MU_NIK":"1234123412341234",
+      "MU_SESSION_ID":"sessionid",
+      "MU_SESSION_EXPIRY":"Jan 28, 2018 9:29:01 AM",
+      "MU_STATE":0,
+      "is_active":true
+   },
+   Token:'token',
+   Id:123412341234,
+   Success:true
+}

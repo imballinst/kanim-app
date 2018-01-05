@@ -1,0 +1,4 @@
+{
+   "Message":"Nomor Antrian AD-QFJ8BD berhasil di batalkan",
+   "Success":true
+}

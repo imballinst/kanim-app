@@ -1,0 +1,10 @@
+URL: https://antrian.imigrasi.go.id/Layanan/rest/AvailabilityInfo.jsp
+Method: POST
+Body:
+
+{
+    Token: "randomtoken",
+    KANIM_ID: 15,
+    START_DATE: "2018-1-4",
+    END_DATE: "2018-1-5",
+}

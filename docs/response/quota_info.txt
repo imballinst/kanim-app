@@ -1,0 +1,10 @@
+{
+   "START_HOUR":1300,
+   "Message":null,
+   "END_HOUR":1400,
+   "QUOTA":4,
+   "DetailTimingId":39108,
+   "KANIM_ID":29,
+   "Success":true,
+   "REQUESTED_DATE":"Jan 31, 2018 12:00:00 AM"
+}

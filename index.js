@@ -3,13 +3,17 @@ require('dotenv').config();
 const axios = require('axios');
 
 // List URLS
-const urlLogin = 'https://antrian.imigrasi.go.id/Authentication.jsp';
-const urlHome = 'https://antrian.imigrasi.go.id/Index.jsp';
+const urlLogin = 'https://antrian.imigrasi.go.id/Layanan/Authentication.jsp';
+const urlHome = 'https://antrian.imigrasi.go.id/Layanan/Index.jsp';
 
-const urlRestLogin = 'https://antrian.imigrasi.go.id/rest/Authentication.jsp';
-const urlRestListKanim = 'https://antrian.imigrasi.go.id/rest/PostKanim.jsp';
-const urlRestCheckSession = 'https://antrian.imigrasi.go.id/rest/checkSession.jsp';
-const urlRestAvailabilityInfo = 'https://antrian.imigrasi.go.id/rest/AvailabilityInfo.jsp';
+const urlRestLogin = 'https://antrian.imigrasi.go.id/Layanan/rest/Authentication.jsp';
+const urlRestListKanim = 'https://antrian.imigrasi.go.id/Layanan/rest/PostKanim.jsp';
+const urlRestCheckSession = 'https://antrian.imigrasi.go.id/Layanan/rest/checkSession.jsp';
+const urlRestAvailabilityInfo = 'https://antrian.imigrasi.go.id/Layanan/rest/AvailabilityInfo.jsp';
+const urlRestQuotaInfo = 'https://antrian.imigrasi.go.id/Layanan/rest/QuotaInfo.jsp';
+const urlRestRegisterQueue = 'https://antrian.imigrasi.go.id/Layanan/rest/RegisterQueue.jsp';
+const urlRestListQueue = 'https://antrian.imigrasi.go.id/Layanan/rest/ListQueue.jsp';
+const urlRestCancelQueue = 'https://antrian.imigrasi.go.id/Layanan/rest/CancelQueue.jsp';
 
 // Helper
 const buildHeaders = (cookie, url, dataLength, customHeaders = {}) => ({
@@ -89,7 +93,7 @@ axios({
 }).then((res) => {
   const parsedJSON = JSON.parse(res.data);
   tokenContainer = parsedJSON.Token;
-
+  console.log(parsedJSON);
   return getListKanim(cookieContainer);
 }).then((res) => {
   kanimsContainer = res.data.Offices;
@@ -100,7 +104,7 @@ axios({
 
   return getAvailabilityInfo(cookieContainer, tokenContainer, kanimID, startDate, endDate);
 }).then((res) => {
-  console.log(res.data);
+  // console.log(res.data);
 }).catch((err) => {
   console.log(err);
 });

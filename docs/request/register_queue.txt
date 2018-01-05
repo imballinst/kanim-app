@@ -1,0 +1,12 @@
+URL: https://antrian.imigrasi.go.id/Layanan/rest/RegisterQueue.jsp
+Method: POST
+Body:
+
+{
+   "JumlahPemohon":"1",
+   "Token":"randomtoken",
+   "UserId":"12341234",
+   "DetailTimingId":39108,
+   "NAMA_PENGANTRI_1":"hehe",
+   "NIK_PENGANTRI_1":"1234123412341234"
+}

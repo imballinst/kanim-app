@@ -1,0 +1,78 @@
+{
+   Availability:[
+      {
+         MD_AVAILABILITY:15,
+         TS_MULAI:null,
+         MD_IDOFFICE:1,
+         MD_MULAI:800,
+         MD_TID:45144,
+         MT_TANGGAL:'Jan 5, 2018',
+         MD_QUOTA:15,
+         TS_SELESAI:null,
+         MD_ID:41412,
+         MD_SELESAI:900
+      },
+      {
+         MD_AVAILABILITY:15,
+         TS_MULAI:null,
+         MD_IDOFFICE:1,
+         MD_MULAI:901,
+         MD_TID:45148,
+         MT_TANGGAL:'Jan 5, 2018',
+         MD_QUOTA:15,
+         TS_SELESAI:null,
+         MD_ID:41416,
+         MD_SELESAI:1000
+      },
+      {
+         MD_AVAILABILITY:15,
+         TS_MULAI:null,
+         MD_IDOFFICE:1,
+         MD_MULAI:1001,
+         MD_TID:45152,
+         MT_TANGGAL:'Jan 5, 2018',
+         MD_QUOTA:15,
+         TS_SELESAI:null,
+         MD_ID:41420,
+         MD_SELESAI:1100
+      },
+      {
+         MD_AVAILABILITY:15,
+         TS_MULAI:null,
+         MD_IDOFFICE:1,
+         MD_MULAI:1101,
+         MD_TID:45160,
+         MT_TANGGAL:'Jan 5, 2018',
+         MD_QUOTA:15,
+         TS_SELESAI:null,
+         MD_ID:41428,
+         MD_SELESAI:1200
+      },
+      {
+         MD_AVAILABILITY:15,
+         TS_MULAI:null,
+         MD_IDOFFICE:1,
+         MD_MULAI:1300,
+         MD_TID:45168,
+         MT_TANGGAL:'Jan 5, 2018',
+         MD_QUOTA:15,
+         TS_SELESAI:null,
+         MD_ID:41436,
+         MD_SELESAI:1400
+      },
+      {
+         MD_AVAILABILITY:15,
+         TS_MULAI:null,
+         MD_IDOFFICE:1,
+         MD_MULAI:1401,
+         MD_TID:45176,
+         MT_TANGGAL:'Jan 5, 2018',
+         MD_QUOTA:15,
+         TS_SELESAI:null,
+         MD_ID:41444,
+         MD_SELESAI:1500
+      }
+   ],
+   Message:null,
+   Success:null
+}

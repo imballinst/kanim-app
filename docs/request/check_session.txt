@@ -1,0 +1,2 @@
+URL: https://antrian.imigrasi.go.id/Layanan/rest/checkSession.jsp
+Method: POST

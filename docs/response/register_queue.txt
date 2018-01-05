@@ -1,0 +1,18 @@
+{
+   "NIK_PENGANTRI":[
+      "1234123412341234"
+   ],
+   "KET_PENGANTRI":[
+      ""
+   ],
+   "Message":"OK",
+   "UserId":123412341234,
+   "DetailTimingId":39108,
+   "NAMA_PENGANTRI":[
+      "hehe"
+   ],
+   "NO_ANTRIAN":[
+      "AD-QFJ8BD"
+   ],
+   "Success":true
+}

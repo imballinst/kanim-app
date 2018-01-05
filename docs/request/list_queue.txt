@@ -1,0 +1,8 @@
+URL: https://antrian.imigrasi.go.id/Layanan/rest/ListQueue.jsp
+Method: POST
+Body:
+
+{
+   "Token":"randomtoken",
+   "UserId":"1000581341"
+}

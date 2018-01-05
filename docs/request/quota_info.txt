@@ -1,0 +1,11 @@
+URL: https://antrian.imigrasi.go.id/Layanan/rest/QuotaInfo.jsp
+Method: POST
+Body:
+
+{
+   "Token":"randomtoken",
+   "KANIM_ID":29,
+   "REQUESTED_DATE":"2018-01-31",
+   "START_HOUR":"1300",
+   "END_HOUR":"1600"
+}

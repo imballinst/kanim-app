@@ -1,0 +1,7 @@
+URL: https://antrian.imigrasi.go.id/Layanan/rest/CancelQueue.jsp
+Method: POST
+Body:
+
+{
+    "NO_ANTRIAN":"AD-QFJ8BD"
+}
