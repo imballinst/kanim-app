@@ -2,6 +2,12 @@ require('dotenv').config();
 
 const winston = require('winston');
 const format = require('date-fns/format');
+const parse = require('date-fns/parse');
+const idLocale = require('date-fns/locale/id');
+const getDate = require('date-fns/getDate');
+const getMonth = require('date-fns/getMonth');
+const getYear = require('date-fns/getYear');
+const addMonths = require('date-fns/addMonths');
 const {
   getMainPage,
   postAvailabilityInfo,
@@ -16,8 +22,18 @@ const {
 const { countAvailable } = require('./lib/parser');
 
 // Main
-const startDateObj = { year: 2018, month: 0, day: 5 };
-const endDateObj = { year: 2018, month: 0, day: 6 };
+const startDate = new Date();
+const startDateObj = {
+  year: getYear(startDate),
+  month: getMonth(startDate),
+  day: getDate(startDate),
+};
+const endDate = addMonths(startDate, 3);
+const endDateObj = {
+  year: getYear(endDate),
+  month: getMonth(endDate),
+  day: getDate(endDate),
+};
 let cookie;
 let token;
 let offices;
@@ -36,28 +52,36 @@ getMainPage().then((res) => {
   offices = res.data.Offices;
 
   const promises = [];
-  const startDate = `${startDateObj.year}-${startDateObj.month}-${startDateObj.day}`;
-  const endDate = `${endDateObj.year}-${endDateObj.month}-${endDateObj.day}`;
+  const startParams = `${startDateObj.year}-${startDateObj.month + 1}-${startDateObj.day}`;
+  const endParams = `${endDateObj.year}-${endDateObj.month + 1}-${endDateObj.day}`;
 
   offices.forEach(({ MO_ID }) => {
-    promises.push(postAvailabilityInfo(cookie, token, MO_ID, startDate, endDate));
+    promises.push(postAvailabilityInfo(cookie, token, MO_ID, startParams, endParams));
   });
 
   return Promise.all(promises);
 })
   .then((res) => {
-    res.forEach((r, idx) => {
-      const { morning, afternoon } = countAvailable(r.data.Availability);
+    const dateFormat = 'MMM D, YYYY';
+    let text = '';
 
-      if (morning && afternoon) {
-        const { year, month, day } = startDateObj;
-        const formattedDate = format(new Date(year, month, day), 'DD MMMM YYYY');
+    res.forEach(({ data }, idx) => {
+      const dates = countAvailable(data.Availability, dateFormat);
 
-        winston.info(`${offices[idx].MO_NAME} - ${formattedDate}`);
-        winston.info(`morning: ${morning}, afternoon: ${afternoon}`);
-        winston.info('-------------------');
-      }
+      text += `${offices[idx].MO_NAME}\n`;
+
+      dates.forEach((dateElement) => {
+        const parsedDate = parse(dateElement.date, dateFormat, new Date());
+        const formattedDate = format(parsedDate, 'DD MMMM YYYY', { locale: idLocale });
+
+        text += `[${formattedDate}] pagi: ${dateElement.morning}` +
+          `, siang: ${dateElement.afternoon}\n`;
+      });
+
+      text += '-------------------\n';
     });
+
+    winston.info(`Rekap:\n${text}`);
   })
   .catch((err) => {
     winston.error(err);
