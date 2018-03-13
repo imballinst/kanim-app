@@ -81,20 +81,9 @@
         "vars": "all",
         "args": "all",
         "ignoreRestSiblings": true,
-        "argsIgnorePattern": "^_"
+        "argsIgnorePattern": "^_",
+        "varsIgnorePattern": "^job"
     }]
   },
-  "globals": {
-    "document": true,
-    "quoteHash": true,
-    "location": true,
-    "window": true,
-    "grecaptcha": true,
-    "$": true,
-    "dict": true,
-    "FileReader": true,
-    "FormData": true,
-    "Image": true,
-    "ga": true
-  }
+  "globals": {}
 }

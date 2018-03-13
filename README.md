@@ -4,7 +4,16 @@ Sometimes, it is really annoying to refresh http://antrian.imigrasi.go.id/ over 
 
 ### What's Special About This
 
-Interval registration checking. If you want to register at certain date and time, it will do it for you with your chosen interval. Let's say you want to register at January 5, 2017 in the morning, with 1 minute interval. Every 1 minute, the application will check the availability. If yes, it will send your registration data, if not, it will repeat next minute.
+Interval registration checking. If you want to register at certain date and time in the future and it's not available yet, this application will send you a notification when it becomes available in the future.
+
+### Steps
+
+1. Fetch all immigration offices' quota for the next 3 months
+2. Query database for active subscribers, get their data (office for registration and date ranges)
+3. For each subscriber's data, do:
+    3.1. Check the quota availability for the chosen office during the date range
+    3.2. If available, send a notification
+    3.3. If not available, do nothing
 
 ### License
 

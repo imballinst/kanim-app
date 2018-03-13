@@ -1,13 +1,14 @@
 require('dotenv').config();
 
-const winston = require('winston');
-const format = require('date-fns/format');
 const parse = require('date-fns/parse');
-const idLocale = require('date-fns/locale/id');
 const getDate = require('date-fns/getDate');
 const getMonth = require('date-fns/getMonth');
 const getYear = require('date-fns/getYear');
 const addMonths = require('date-fns/addMonths');
+const { CronJob } = require('cron');
+
+const { winstonInfo, winstonError } = require('./lib/logging');
+const { formatDate } = require('./lib/dateUtil');
 const {
   getMainPage,
   postAvailabilityInfo,
@@ -19,7 +20,7 @@ const {
   // postQuotaInfo,
   // postRegisterQueue,
 } = require('./lib/requests');
-const { countAvailable } = require('./lib/parser');
+const { countAvailable, getQuotaDifference } = require('./lib/parser');
 
 // Main
 const startDate = new Date();
@@ -34,11 +35,12 @@ const endDateObj = {
   month: getMonth(endDate),
   day: getDate(endDate),
 };
+let lastOffices = {};
 let cookie;
 let token;
 let offices;
 
-getMainPage().then((res) => {
+const getAvailabilities = () => getMainPage().then((res) => {
   const [, jSessionID] = res.headers['set-cookie'][0].split(';')[0].split('=');
   cookie = jSessionID;
 
@@ -52,7 +54,7 @@ getMainPage().then((res) => {
   const promises = [];
   const startParams = `${startDateObj.year}-${startDateObj.month + 1}-${startDateObj.day}`;
   const endParams = `${endDateObj.year}-${endDateObj.month + 1}-${endDateObj.day}`;
-  const nameFilter = 'karta';
+  const nameFilter = 'Jakarta';
 
   offices = res.data.Offices.filter(({ MO_NAME }) => MO_NAME.includes(nameFilter));
 
@@ -64,26 +66,80 @@ getMainPage().then((res) => {
 })
   .then((res) => {
     const dateFormat = 'MMM D, YYYY';
+    const currentOffices = {};
     let text = '';
 
+    // Fill to currentOffices
     res.forEach(({ data }, idx) => {
       const dates = countAvailable(data.Availability, dateFormat);
+      const officeName = offices[idx].MO_NAME;
 
-      text += `${offices[idx].MO_NAME}\n`;
+      if (!currentOffices[officeName]) {
+        currentOffices[officeName] = {};
+      }
 
-      dates.forEach((dateElement) => {
-        const parsedDate = parse(dateElement.date, dateFormat, new Date());
-        const formattedDate = format(parsedDate, 'DD MMMM YYYY', { locale: idLocale });
+      // list dates and quota each day
+      dates.forEach(({ date, morning, afternoon }) => {
+        const parsedDate = parse(date, dateFormat, new Date());
+        const formattedDate = formatDate(parsedDate);
 
-        text += `[${formattedDate}] pagi: ${dateElement.morning}` +
-          `, siang: ${dateElement.afternoon}\n`;
+        currentOffices[officeName][formattedDate] = { morning, afternoon };
       });
-
-      text += '-------------------\n';
     });
 
-    winston.info(`Rekap:\n${text}`);
+    // Check the difference
+    if (Object.keys(lastOffices).length !== 0) {
+      offices.forEach(({ MO_NAME: officeName }) => {
+        const lastOfficesDates = lastOffices[officeName];
+        const currentOfficesDates = currentOffices[officeName];
+
+        text += `${officeName}\n`;
+
+        const lastDates = Object.keys(lastOfficesDates);
+        const currentDates = Object.keys(currentOfficesDates).reduce((arr, key) => {
+          const isExists = lastDates.includes(key);
+
+          return isExists ? arr : arr.concat(key);
+        }, []);
+        const allDates = lastDates.concat(currentDates);
+
+        // iterate all dates across last offices and current offices
+        if (allDates.length) {
+          allDates.forEach((date) => {
+            const morningDifference = getQuotaDifference(
+              lastOfficesDates[date],
+              currentOfficesDates[date],
+              'morning'
+            );
+            const afternoonDifference = getQuotaDifference(
+              lastOfficesDates[date],
+              currentOfficesDates[date],
+              'afternoon'
+            );
+            text += `[${date}] ${morningDifference}, ${afternoonDifference}\n`;
+          });
+        } else {
+          text += `Tidak ada kuota dari ${formatDate(startDate)} ` +
+            `hingga ${formatDate(endDate)}\n`;
+        }
+
+        text += '-------------------\n';
+      });
+
+      winstonInfo(`Rekap:\n${text}`);
+    }
+
+    lastOffices = currentOffices;
   })
   .catch((err) => {
-    winston.error(err);
+    winstonError(err);
   });
+
+// CronJob
+const job = new CronJob(
+  '0,30 * * * * *',
+  getAvailabilities,
+  undefined,
+  true,
+  'Asia/Jakarta'
+);
