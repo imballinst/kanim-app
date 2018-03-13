@@ -1,4 +1,4 @@
-URL: https://antrian.imigrasi.go.id/Layanan/rest/PostKanim.jsp
+URL: https://antrian.imigrasi.go.id/rest/PostKanim.jsp
 Method: POST
 Body:
 

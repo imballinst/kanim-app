@@ -1,0 +1,12 @@
+URL: https://antrian.imigrasi.go.id/rest/Registration.jsp
+Method: POST
+Body:
+
+{
+    Username: 'Username',
+    Password: 'Password',
+    NIK: 'NIK',
+    Telephone: 'Telephone',
+    Email: 'Email',
+    Alamat: 'Alamat'
+}

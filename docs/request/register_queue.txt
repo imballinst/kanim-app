@@ -1,4 +1,4 @@
-URL: https://antrian.imigrasi.go.id/Layanan/rest/RegisterQueue.jsp
+URL: https://antrian.imigrasi.go.id/rest/RegisterQueue.jsp
 Method: POST
 Body:
 

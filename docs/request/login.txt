@@ -1,4 +1,4 @@
-URL: https://antrian.imigrasi.go.id/Layanan/rest/Authentication.jsp
+URL: https://antrian.imigrasi.go.id/rest/Authentication.jsp
 Method: POST
 Body:
 

@@ -1,0 +1,12 @@
+{
+   "Message":"Fetched data with Email",
+   "data":[
+      {
+         "mu_EMAIL":"youremail@gmail.com",
+         "mu_ID":yourid,
+         "mu_USERNAME":"yourusername"
+      }
+   ],
+   "kode":"verification_code",
+   "Success":true
+}

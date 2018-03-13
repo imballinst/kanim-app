@@ -1,4 +1,4 @@
-URL: https://antrian.imigrasi.go.id/Layanan/rest/ListQueue.jsp
+URL: https://antrian.imigrasi.go.id/rest/ListQueue.jsp
 Method: POST
 Body:
 

@@ -1,4 +1,4 @@
-URL: https://antrian.imigrasi.go.id/Layanan/rest/AvailabilityInfo.jsp
+URL: https://antrian.imigrasi.go.id/rest/AvailabilityInfo.jsp
 Method: POST
 Body:
 

@@ -49,11 +49,12 @@ getMainPage().then((res) => {
 
   return postListKanim(cookie);
 }).then((res) => {
-  offices = res.data.Offices;
-
   const promises = [];
   const startParams = `${startDateObj.year}-${startDateObj.month + 1}-${startDateObj.day}`;
   const endParams = `${endDateObj.year}-${endDateObj.month + 1}-${endDateObj.day}`;
+  const nameFilter = 'karta';
+
+  offices = res.data.Offices.filter(({ MO_NAME }) => MO_NAME.includes(nameFilter));
 
   offices.forEach(({ MO_ID }) => {
     promises.push(postAvailabilityInfo(cookie, token, MO_ID, startParams, endParams));

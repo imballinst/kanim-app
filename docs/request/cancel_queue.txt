@@ -1,4 +1,4 @@
-URL: https://antrian.imigrasi.go.id/Layanan/rest/CancelQueue.jsp
+URL: https://antrian.imigrasi.go.id/rest/CancelQueue.jsp
 Method: POST
 Body:
 
