@@ -35,6 +35,7 @@ const {
   insertMany,
   deleteMany,
   find,
+  updateMany,
 } = require('./lib/mongo');
 const { sendMail } = require('./lib/mail');
 
@@ -163,27 +164,41 @@ const checkAvailabilities = (dbObject, nameFilter) => Promise.all([
     return Object.assign(sum, { [MO_ID]: MO_NAME });
   }, {});
 
-  dbRes.data.forEach(({
-    mo_id: moID,
-    // session,
-    start_date: innerStart,
-    end_date: innerEnd, email,
-  }) => {
-    // iterate here
-    const includedDates = [];
+  if (dbRes.data.length) {
+    const updatedIDs = [];
 
-    Object.keys(currentOffices[moID]).forEach((date) => {
-      if (isBetween(innerStart, innerEnd, date)) {
-        const { morning, afternoon } = currentOffices[moID][date];
+    dbRes.data.forEach(({
+      _id: id,
+      mo_id: moID,
+      // session,
+      start_date: innerStart,
+      end_date: innerEnd, email,
+    }) => {
+      // iterate here
+      const includedDates = [];
 
-        includedDates.push({ date, morning, afternoon });
+      Object.keys(currentOffices[moID]).forEach((date) => {
+        if (isBetween(innerStart, innerEnd, date)) {
+          const { morning, afternoon } = currentOffices[moID][date];
+
+          includedDates.push({ date, morning, afternoon });
+        }
+      });
+
+      if (includedDates.length) {
+        sendMail(email, mappedOffices[moID], includedDates);
+        updatedIDs.push(id);
       }
     });
 
-    if (includedDates.length) {
-      sendMail(email, mappedOffices[moID], includedDates);
-    }
-  });
+    updateMany(
+      dbObject, 'notifications',
+      { _id: { $in: updatedIDs } },
+      { $set: { notified: true } }
+    );
+  } else {
+    winstonInfo('No users need to be notified at the moment.');
+  }
 });
 
 // Main application
