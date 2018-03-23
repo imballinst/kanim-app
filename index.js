@@ -239,7 +239,7 @@ getMainPage().then((res) => {
   .then(() => {
   // CronJob
     const job = new CronJob(
-      '0,30 * * * * *',
+      '0 0-59/2 * * * *',
       () => checkAvailabilities(db, 'Jakarta'),
       () => closeDBConnection(client),
       true,
