@@ -174,7 +174,7 @@ const checkAvailabilities = (dbObject, nameFilter) => Promise.all([
       start_date: innerStart,
       end_date: innerEnd, email,
     }) => {
-      if(currentOffices[moID]) {
+      if (currentOffices[moID]) {
         const includedDates = [];
 
         Object.keys(currentOffices[moID]).forEach((date) => {
