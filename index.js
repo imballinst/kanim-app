@@ -174,20 +174,21 @@ const checkAvailabilities = (dbObject, nameFilter) => Promise.all([
       start_date: innerStart,
       end_date: innerEnd, email,
     }) => {
-      // iterate here
-      const includedDates = [];
+      if(currentOffices[moID]) {
+        const includedDates = [];
 
-      Object.keys(currentOffices[moID]).forEach((date) => {
-        if (isBetween(innerStart, innerEnd, date)) {
-          const { morning, afternoon } = currentOffices[moID][date];
+        Object.keys(currentOffices[moID]).forEach((date) => {
+          if (isBetween(innerStart, innerEnd, date)) {
+            const { morning, afternoon } = currentOffices[moID][date];
 
-          includedDates.push({ date, morning, afternoon });
+            includedDates.push({ date, morning, afternoon });
+          }
+        });
+
+        if (includedDates.length) {
+          sendMail(email, mappedOffices[moID], includedDates);
+          updatedIDs.push(id);
         }
-      });
-
-      if (includedDates.length) {
-        sendMail(email, mappedOffices[moID], includedDates);
-        updatedIDs.push(id);
       }
     });
 
@@ -221,17 +222,17 @@ getMainPage().then((res) => {
   .then(() => insertMany(db, 'notifications', [
     {
       email: 'ballinst@gmail.com',
-      mo_id: 1,
+      mo_id: 20,
       session: 'morning',
       start_date: new Date(2018, 2, 20),
-      end_date: new Date(2018, 2, 29),
+      end_date: new Date(2018, 3, 20),
       notified: false,
     }, {
       email: 'ballinst@gmail.com',
-      mo_id: 1,
+      mo_id: 21,
       session: 'afternoon',
       start_date: new Date(2018, 2, 20),
-      end_date: new Date(2018, 2, 29),
+      end_date: new Date(2018, 3, 20),
       notified: false,
     },
   ]))
@@ -239,7 +240,7 @@ getMainPage().then((res) => {
   // CronJob
     const job = new CronJob(
       '0,30 * * * * *',
-      () => checkAvailabilities(db, 'Banda Aceh'),
+      () => checkAvailabilities(db, 'Jakarta'),
       () => closeDBConnection(client),
       true,
       'Asia/Jakarta'
