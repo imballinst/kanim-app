@@ -3,7 +3,7 @@ module.exports = {
   apps: [
     {
       name: "kanim-app",
-      script: "./index.js",
+      script: "./bin/www",
       watch: true,
       ignore_watch: [".git/"]
     }

@@ -9,14 +9,14 @@ charset = utf-8
 trim_trailing_whitespace = true
 insert_final_newline = true
 
+# For bin/www
+[bin/www]
+indent_style = space
+indent_size = 2
+
 # Markdown in root directory
 [*.md]
 trim_trailing_whitespace = false
-
-# PHP files in the whole project
-[*.php]
-indent_style = space
-indent_size = 4
 
 # JS files in the whole project
 [**.{js,json}]

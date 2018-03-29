@@ -1,0 +1,151 @@
+// Import modules
+const http = require('http');
+const getDate = require('date-fns/getDate');
+const getMonth = require('date-fns/getMonth');
+const getYear = require('date-fns/getYear');
+const addMonths = require('date-fns/addMonths');
+const { CronJob } = require('cron');
+
+// Environment settings
+const app = require('../app');
+const { SERVER_PORT } = require('../config/env');
+const { winstonInfo } = require('../lib/logging');
+const { isBetween } = require('../lib/dateUtil');
+const {
+  getMainPage,
+  postAvailabilityInfo,
+  postLogin,
+  postListKanim,
+} = require('../lib/requests');
+const { getOfficesQuota } = require('../lib/quota');
+const {
+  getDatabaseConnection,
+  closeDBConnection,
+  find,
+  updateMany,
+} = require('../lib/mongo');
+const { sendMail } = require('../lib/mail');
+
+// Routes
+const initRoutes = require('../routes');
+
+// Server and Port
+const server = new http.Server(app);
+const portApp = SERVER_PORT || 8000;
+
+server.listen(portApp, () => {
+  winstonInfo(`Listening on port ${portApp}!`);
+
+  // Main
+  const startDate = new Date();
+  const startDateObj = {
+    year: getYear(startDate),
+    month: getMonth(startDate),
+    day: getDate(startDate),
+  };
+  const endDate = addMonths(startDate, 1);
+  const endDateObj = {
+    year: getYear(endDate),
+    month: getMonth(endDate),
+    day: getDate(endDate),
+  };
+  let cookie;
+  let token;
+  let offices;
+  let client;
+  let db;
+
+  const getAvailabilities = nameFilter => postListKanim(cookie).then((res) => {
+    const promises = [];
+    const startParams = `${startDateObj.year}-${startDateObj.month + 1}-${startDateObj.day}`;
+    const endParams = `${endDateObj.year}-${endDateObj.month + 1}-${endDateObj.day}`;
+
+    offices = res.data.Offices.filter(({ MO_NAME }) => MO_NAME.includes(nameFilter));
+
+    offices.forEach(({ MO_ID }) => {
+      promises.push(postAvailabilityInfo(cookie, token, MO_ID, startParams, endParams));
+    });
+
+    const officeNames = offices.map(({ MO_NAME }) => MO_NAME).join(', ');
+    winstonInfo(`Checking availabilities for ${officeNames}...`);
+
+    return Promise.all(promises);
+  });
+
+  const checkAvailabilities = (dbObject, nameFilter) => Promise.all([
+    find(dbObject, 'notifications', { notified: false }),
+    getAvailabilities(nameFilter),
+  ]).then(([dbRes, array]) => {
+    const currentOffices = getOfficesQuota(array, 'MO_ID', offices);
+    const mappedOffices = offices.reduce((sum, cur) => {
+      const { MO_ID, MO_NAME } = cur;
+
+      return Object.assign(sum, { [MO_ID]: MO_NAME });
+    }, {});
+
+    if (dbRes.data.length) {
+      const updatedIDs = [];
+
+      dbRes.data.forEach(({
+        _id: id,
+        mo_id: moID,
+        // session,
+        start_date: innerStart,
+        end_date: innerEnd, email,
+      }) => {
+        if (currentOffices[moID]) {
+          const includedDates = [];
+
+          Object.keys(currentOffices[moID]).forEach((date) => {
+            if (isBetween(innerStart, innerEnd, date)) {
+              const { morning, afternoon } = currentOffices[moID][date];
+
+              includedDates.push({ date, morning, afternoon });
+            }
+          });
+
+          if (includedDates.length) {
+            sendMail(email, mappedOffices[moID], includedDates);
+            updatedIDs.push(id);
+          }
+        }
+      });
+
+      updateMany(
+        dbObject, 'notifications',
+        { _id: { $in: updatedIDs } },
+        { $set: { notified: true } }
+      );
+    } else {
+      winstonInfo('No users need to be notified at the moment.');
+    }
+  });
+
+  // Main application
+  getMainPage().then((res) => {
+    const [, jSessionID] = res.headers['set-cookie'][0].split(';')[0].split('=');
+    cookie = jSessionID;
+
+    return postLogin(cookie);
+  }).then((res) => {
+    const parsedJSON = JSON.parse(res.data);
+    token = parsedJSON.Token;
+
+    return getDatabaseConnection();
+  }).then(({ mongoClient, clientDb }) => {
+    client = mongoClient;
+    db = clientDb;
+
+    app.locals.db = db;
+    initRoutes();
+  })
+    .then(() => {
+      const job = new CronJob(
+        '0 0-59/4 * * * *',
+        () => checkAvailabilities(db, ''),
+        () => closeDBConnection(client),
+        true,
+        'Asia/Jakarta'
+      );
+    });
+});
