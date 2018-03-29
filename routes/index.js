@@ -1,3 +1,5 @@
+const { ObjectId } = require('mongodb');
+
 const app = require('../app');
 // const { winstonInfo } = require('../lib/logging');
 const { find, insertOne, updateOne } = require('../lib/mongo');
@@ -7,13 +9,22 @@ module.exports = () => {
     // get all notification
     res.set('Content-Type', 'application/json');
 
+    const queryObject = { userID: parseInt(req.params.userID, 10) };
+
+    // query params
+    if (req.query.notified !== undefined) {
+      queryObject.notified = req.query.notified === 'true';
+    }
+
     find(
       app.locals.db,
       'notification',
-      { userID: req.params.userID }
+      queryObject
     )
-      .then(({ data }) => res.send({ success: true, data }))
-      .catch(err => res.send({ success: false, data: err }));
+      .then(({ data }) => {
+        res.send({ success: true, data });
+      })
+      .catch(err => res.send({ success: false, error: err }));
   });
 
   app.post('/user/:userID/notification', (req, res) => {
@@ -26,7 +37,7 @@ module.exports = () => {
       Object.assign({}, req.body, { notified: false })
     )
       .then(({ data }) => res.send({ success: true, data }))
-      .catch(err => res.send({ success: false, data: err }));
+      .catch(err => res.send({ success: false, error: err }));
   });
 
   app.post('/user/:userID/notification/:notificationID', (req, res) => {
@@ -36,10 +47,10 @@ module.exports = () => {
     updateOne(
       app.locals.db,
       'notification',
-      { _id: req.params.notificationID },
+      { _id: ObjectId(req.params.notificationID) },
       { $set: req.body }
     )
-      .then(({ data }) => res.send(data))
-      .catch(err => res.send(err));
+      .then(({ data }) => res.send({ success: true, data }))
+      .catch(err => res.send({ success: false, error: err }));
   });
 };
