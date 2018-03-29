@@ -6,21 +6,36 @@ Sometimes, it is really annoying to refresh https://antrian.imigrasi.go.id/ over
 
 Interval registration checking. If you want to register at certain date and time in the future and it's not available yet, this application will send you a notification when it becomes available in the future.
 
-### Steps
+### Application Flow
 
 1. Fetch all immigration offices' quota for the next 3 months
 2. Query database for active subscribers, get their data (office for registration and date ranges)
 3. For each subscriber's data, do:
-    3.1. Check the quota availability for the chosen office during the date range
-    3.2. If available, send a notification
-    3.3. If not available, do nothing
+   1. Check the quota availability for the chosen office during the date range
+   2. If available, send a notification
+   3. If not available, do nothing
+
+### APIs
+
+Route | Method | Purpose
+----- | ------ | -------
+`/user/{userID}/notification` | `GET` | Gets all notification for userID
+`/user/{userID}/notification` | `POST` | Adds a new notification for userID
+`/user/{userID}/notification/{notificationID}` | `POST` | Edits a notification for userID
+
+### Prerequisites
+
+1. NodeJS (at least `v6.11.5`)
+2. NPM (at least `3.10.10`)
+3. PM2 (at least `2.4.2`)
+4. MongoDB (at least `3.2.13`)
 
 ### How to Use
 
 1. Clone this repository
 2. `npm install`
 3. Copy `.env.example` to `.env` and fill the variable values
-4. `node index.js`
+4. `npm start`
 
 ### License
 
