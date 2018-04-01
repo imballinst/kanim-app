@@ -12,7 +12,6 @@ const { SERVER_PORT } = require('../config/env');
 const { winstonInfo } = require('../lib/logging');
 const { isBetween } = require('../lib/dateUtil');
 const {
-  getMainPage,
   postAvailabilityInfo,
   postLogin,
   postListKanim,
@@ -55,22 +54,31 @@ server.listen(portApp, () => {
   let client;
   let db;
 
-  const getAvailabilities = nameFilter => postListKanim(cookie).then((res) => {
-    const promises = [];
-    const startParams = `${startDateObj.year}-${startDateObj.month + 1}-${startDateObj.day}`;
-    const endParams = `${endDateObj.year}-${endDateObj.month + 1}-${endDateObj.day}`;
-
-    offices = res.data.Offices.filter(({ MO_NAME }) => MO_NAME.includes(nameFilter));
-
-    offices.forEach(({ MO_ID }) => {
-      promises.push(postAvailabilityInfo(cookie, token, MO_ID, startParams, endParams));
-    });
-
-    const officeNames = offices.map(({ MO_NAME }) => MO_NAME).join(', ');
-    winstonInfo(`Checking availabilities for ${officeNames}...`);
-
-    return Promise.all(promises);
+  const getCookieAndToken = () => postLogin().then((res) => {
+    const [, jSessionID] = res.headers['set-cookie'][0].split(';')[0].split('=');
+    const parsedJSON = JSON.parse(res.data);
+    cookie = jSessionID;
+    token = parsedJSON.Token;
   });
+
+  const getAvailabilities = nameFilter => getCookieAndToken()
+    .then(() => postListKanim(cookie))
+    .then((res) => {
+      const promises = [];
+      const startParams = `${startDateObj.year}-${startDateObj.month + 1}-${startDateObj.day}`;
+      const endParams = `${endDateObj.year}-${endDateObj.month + 1}-${endDateObj.day}`;
+
+      offices = res.data.Offices.filter(({ MO_NAME }) => MO_NAME.includes(nameFilter));
+
+      offices.forEach(({ MO_ID }) => {
+        promises.push(postAvailabilityInfo(cookie, token, MO_ID, startParams, endParams));
+      });
+
+      const officeNames = offices.map(({ MO_NAME }) => MO_NAME).join(', ');
+      winstonInfo(`Checking availabilities for ${officeNames}...`);
+
+      return Promise.all(promises);
+    });
 
   const checkAvailabilities = (dbObject, nameFilter) => Promise.all([
     find(dbObject, 'notifications', { notified: false }),
@@ -122,27 +130,18 @@ server.listen(portApp, () => {
   });
 
   // Main application
-  getMainPage().then((res) => {
-    const [, jSessionID] = res.headers['set-cookie'][0].split(';')[0].split('=');
-    cookie = jSessionID;
+  getDatabaseConnection()
+    .then(({ mongoClient, clientDb }) => {
+      client = mongoClient;
+      db = clientDb;
 
-    return postLogin(cookie);
-  }).then((res) => {
-    const parsedJSON = JSON.parse(res.data);
-    token = parsedJSON.Token;
-
-    return getDatabaseConnection();
-  }).then(({ mongoClient, clientDb }) => {
-    client = mongoClient;
-    db = clientDb;
-
-    app.locals.db = db;
-    initRoutes();
-  })
+      app.locals.db = db;
+      initRoutes();
+    })
     .then(() => {
       const job = new CronJob(
-        '0 0-59/4 * * * *',
-        () => checkAvailabilities(db, ''),
+        '0-59/30 * * * * *',
+        () => checkAvailabilities(db, 'karta'),
         () => closeDBConnection(client),
         true,
         'Asia/Jakarta'
