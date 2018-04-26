@@ -11,7 +11,7 @@
     "log": "pm2 logs kanim-app",
     "show": "pm2 show kanim-app",
     "test": "jest && eslint --fix app.js lib/. bin/www routes/.",
-    "test:jestwatch": "jest --watch"
+    "test:jest-watch": "jest --watch"
   },
   "author": "Try Ajitiono",
   "license": "MIT",

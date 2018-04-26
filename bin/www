@@ -8,7 +8,11 @@ const { CronJob } = require('cron');
 
 // Environment settings
 const app = require('../app');
-const { SERVER_PORT } = require('../config/env');
+const {
+  SERVER_PORT,
+  KANIM_USERNAME: username,
+  KANIM_PASSWORD: password,
+} = require('../config/env');
 const { winstonInfo } = require('../lib/logging');
 const { isBetween } = require('../lib/dateUtil');
 const {
@@ -54,7 +58,7 @@ server.listen(portApp, () => {
   let client;
   let db;
 
-  const getCookieAndToken = () => postLogin().then((res) => {
+  const getCookieAndToken = () => postLogin(undefined, username, password).then((res) => {
     const [, jSessionID] = res.headers['set-cookie'][0].split(';')[0].split('=');
     const parsedJSON = JSON.parse(res.data);
     cookie = jSessionID;
@@ -136,11 +140,12 @@ server.listen(portApp, () => {
       db = clientDb;
 
       app.locals.db = db;
-      initRoutes();
+      initRoutes(app);
     })
     .then(() => {
       const job = new CronJob(
         '0 0-59/4 * * * *',
+        () => {},
         () => checkAvailabilities(db, 'karta'),
         () => closeDBConnection(client),
         true,

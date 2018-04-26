@@ -8,13 +8,13 @@ const {
   find,
 } = require('../../lib/mongo');
 const app = require('../../app');
-const initIndexRoutes = require('../index');
+const initNotifRoutes = require('../notifications');
 let promise;
 let db;
 let client;
 
 beforeAll(() => {
-  initIndexRoutes();
+  initNotifRoutes(app);
 
   promise = getDatabaseConnection();
 
@@ -139,7 +139,7 @@ describe('base route (routes/base)', () => {
     })
   );
 
-  it('tests route POST /user/:userID/notification/:notificationID', () => find(
+  it('tests route put /user/:userID/notification/:notificationID', () => find(
       db,
       'notification',
       { userID: 4 }
@@ -147,7 +147,7 @@ describe('base route (routes/base)', () => {
       const notificationID = data[0]._id.toString();
 
       return request(app)
-        .post(`/user/4/notification/${notificationID}`)
+        .put(`/user/4/notification/${notificationID}`)
         .send({
           notified: true,
         })
