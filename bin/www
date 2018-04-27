@@ -145,7 +145,6 @@ server.listen(portApp, () => {
     .then(() => {
       const job = new CronJob(
         '0 0-59/4 * * * *',
-        () => {},
         () => checkAvailabilities(db, 'karta'),
         () => closeDBConnection(client),
         true,

@@ -1,5 +1,6 @@
 // const { winstonInfo } = require('../lib/logging');
 const { getOfficeQuota } = require('../lib/quota');
+const { parseJSONIfString } = require('../lib/objectUtil');
 const {
   postCheckSession,
   postListKanim,
@@ -10,7 +11,7 @@ const {
 
 module.exports = (app) => {
   app.get('/offices', (req, res) => {
-    const token = req.headers['X-IMM-TOKEN'];
+    const token = req.headers['x-imm-token'];
     const response = { success: false };
 
     if (!token) {
@@ -18,7 +19,7 @@ module.exports = (app) => {
       res.send(response);
     } else {
       postCheckSession(undefined, token).then(({ data }) => {
-        const { Success, Message } = data;
+        const { Success, Message } = parseJSONIfString(data);
 
         if (Success) {
           return postListKanim();
@@ -28,7 +29,7 @@ module.exports = (app) => {
       }).then(({ data }) => {
         const {
           Success, Message, Offices, errorCode,
-        } = data;
+        } = parseJSONIfString(data);
 
         res.set('Content-Type', 'application/json');
 
@@ -50,8 +51,8 @@ module.exports = (app) => {
 
   app.get('/offices/:officeID', (req, res) => {
     // get quota for an office
-    const token = req.headers['X-IMM-TOKEN'];
-    const { startDate, endDate } = req.body;
+    const token = req.headers['x-imm-token'];
+    const { startDate, endDate } = req.query;
     const response = { success: false };
 
     res.set('Content-Type', 'application/json');
@@ -61,7 +62,7 @@ module.exports = (app) => {
       res.send(response);
     } else {
       postCheckSession(undefined, token).then(({ data }) => {
-        const { Success, Message } = data;
+        const { Success, Message } = parseJSONIfString(data);
 
         if (Success) {
           return postAvailabilityInfo(undefined, token, req.params.officeID, startDate, endDate);
@@ -71,7 +72,7 @@ module.exports = (app) => {
       }).then(({ data }) => {
         const {
           Success, Message, Availability, errorCode,
-        } = data;
+        } = parseJSONIfString(data);
 
         if (!Message || Success) {
           const quota = getOfficeQuota(Availability);
@@ -93,7 +94,7 @@ module.exports = (app) => {
 
   app.post('/offices/:officeID/check', (req, res) => {
     // get quota for an office
-    const token = req.headers['X-IMM-TOKEN'];
+    const token = req.headers['x-imm-token'];
     const { date, startHour, endHour } = req.body;
     const response = { success: false };
 
@@ -104,7 +105,7 @@ module.exports = (app) => {
       res.send(response);
     } else {
       postCheckSession(undefined, token).then(({ data }) => {
-        const { Success, Message } = data;
+        const { Success, Message } = parseJSONIfString(data);
 
         if (Success) {
           return postQuotaInfo(undefined, token, req.params.officeID, date, startHour, endHour);
@@ -114,7 +115,7 @@ module.exports = (app) => {
       }).then(({ data }) => {
         const {
           Message, QUOTA, DetailTimingId, Success, errorCode,
-        } = data;
+        } = parseJSONIfString(data);
 
         if (!Message || Success) {
           response.data = {
@@ -137,7 +138,7 @@ module.exports = (app) => {
 
   app.post('/offices/:officeID/register', (req, res) => {
     // get quota for an office
-    const token = req.headers['X-IMM-TOKEN'];
+    const token = req.headers['x-imm-token'];
     const {
       applicantCount, userID, timingID, name, nik,
     } = req.body;
@@ -150,7 +151,7 @@ module.exports = (app) => {
       res.send(response);
     } else {
       postCheckSession(undefined, token).then(({ data }) => {
-        const { Success, Message } = data;
+        const { Success, Message } = parseJSONIfString(data);
 
         if (Success) {
           return postRegisterQueue(undefined, applicantCount, token, userID, timingID, name, nik);
@@ -160,7 +161,7 @@ module.exports = (app) => {
       }).then(({ data }) => {
         const {
           Message, NO_ANTRIAN, Success, errorCode,
-        } = data;
+        } = parseJSONIfString(data);
 
         if (!Message || Success) {
           response.data = { queueNumber: NO_ANTRIAN };

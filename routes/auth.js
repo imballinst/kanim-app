@@ -1,22 +1,23 @@
 const { postLogin } = require('../lib/requests');
+const { parseJSONIfString } = require('../lib/objectUtil');
 
 module.exports = (app) => {
   app.post('/login', (req, res) => {
     // get all notification
     const response = { success: false };
-    const { username, password } = req.data;
+    const { username, password } = req.body;
 
     res.set('Content-Type', 'application/json');
 
     postLogin(undefined, username, password).then(({ data }) => {
       const {
-        Success, Message, Token, Id, errorCode,
-      } = data;
+        Success, Message, Token, errorCode,
+      } = parseJSONIfString(data);
 
       res.set('Content-Type', 'application/json');
 
       if (Success) {
-        response.data = { Token, Id, Message };
+        response.data = { token: Token, user: parseJSONIfString(Message) };
         response.success = true;
       } else {
         response.message = Message;

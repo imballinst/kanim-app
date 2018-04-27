@@ -1,3 +1,4 @@
+const { parseJSONIfString } = require('../lib/objectUtil');
 const {
   postCheckSession,
   postListQueue,
@@ -6,7 +7,7 @@ const {
 
 module.exports = (app) => {
   app.get('/queue', (req, res) => {
-    const token = req.headers['X-IMM-TOKEN'];
+    const token = req.headers['x-imm-token'];
     const { userID } = req.query;
     const response = { success: false };
 
@@ -15,7 +16,7 @@ module.exports = (app) => {
       res.send(response);
     } else {
       postCheckSession(undefined, token).then(({ data }) => {
-        const { Success, Message } = data;
+        const { Success, Message } = parseJSONIfString(data);
 
         if (Success) {
           return postListQueue(undefined, token, userID);
@@ -25,7 +26,7 @@ module.exports = (app) => {
       }).then(({ data }) => {
         const {
           Success, Message, Queues, errorCode,
-        } = data;
+        } = parseJSONIfString(data);
 
         res.set('Content-Type', 'application/json');
 
@@ -45,9 +46,9 @@ module.exports = (app) => {
     }
   });
 
-  app.delete('/queue', (req, res) => {
-    const token = req.headers['X-IMM-TOKEN'];
-    const { queueNumber } = req.data;
+  app.delete('/queue/:queueNumber', (req, res) => {
+    const token = req.headers['x-imm-token'];
+    const { queueNumber } = req.params;
     const response = { success: false };
 
     if (!token) {
@@ -55,7 +56,7 @@ module.exports = (app) => {
       res.send(response);
     } else {
       postCheckSession(undefined, token).then(({ data }) => {
-        const { Success, Message } = data;
+        const { Success, Message } = parseJSONIfString(data);
 
         if (Success) {
           return postCancelQueue(undefined, queueNumber);
@@ -63,7 +64,7 @@ module.exports = (app) => {
 
         return { data: { Message, errorCode: 401 } };
       }).then(({ data }) => {
-        const { Success, Message, errorCode } = data;
+        const { Success, Message, errorCode } = parseJSONIfString(data);
 
         res.set('Content-Type', 'application/json');
 
