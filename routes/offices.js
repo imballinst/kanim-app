@@ -67,7 +67,6 @@ module.exports = (app) => {
         if (Success) {
           return postAvailabilityInfo(undefined, token, req.params.officeID, startDate, endDate);
         }
-
         return { data: { Message, errorCode: 401 } };
       }).then(({ data }) => {
         const {
@@ -75,7 +74,7 @@ module.exports = (app) => {
         } = parseJSONIfString(data);
 
         if (!Message || Success) {
-          const quota = getOfficeQuota(Availability);
+          const quota = getOfficeQuota(Availability, startDate, endDate);
 
           response.data = quota;
           response.success = true;
