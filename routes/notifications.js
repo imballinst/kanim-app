@@ -8,10 +8,22 @@ module.exports = (app) => {
     // get all notification
     res.set('Content-Type', 'application/json');
 
-    const queryObject = { userID: parseInt(req.params.userID, 10) };
+    const { notified, treshold, session = 'both' } = req.query;
 
-    if (req.query.notified !== undefined) {
-      queryObject.notified = req.query.notified === 'true';
+    const queryObject = {
+      userID: parseInt(req.params.userID, 10),
+      session: {
+        $in: session === 'both' ? ['both', 'morning', 'afternoon'] : [session],
+      },
+    };
+
+    // conditional queries
+    if (notified !== undefined) {
+      queryObject.notified = notified === 'true';
+    }
+
+    if (treshold !== undefined) {
+      queryObject.treshold = { $gte: parseInt(treshold, 10) };
     }
 
     find(
@@ -19,9 +31,7 @@ module.exports = (app) => {
       'notification',
       queryObject
     )
-      .then(({ data }) => {
-        res.send({ success: true, data });
-      })
+      .then(({ data }) => res.send({ success: true, data }))
       .catch(err => res.send({ success: false, message: err }));
   });
 

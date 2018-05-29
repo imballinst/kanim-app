@@ -3,12 +3,14 @@ const http = require('http');
 const getDate = require('date-fns/getDate');
 const getMonth = require('date-fns/getMonth');
 const getYear = require('date-fns/getYear');
+const isBefore = require('date-fns/isBefore');
 const addMonths = require('date-fns/addMonths');
 const { CronJob } = require('cron');
 
 // Environment settings
 const app = require('../app');
 const {
+  NODE_ENV,
   SERVER_PORT,
   KANIM_USERNAME: username,
   KANIM_PASSWORD: password,
@@ -84,54 +86,78 @@ server.listen(portApp, () => {
       return Promise.all(promises);
     });
 
-  const checkAvailabilities = (dbObject, nameFilter) => Promise.all([
-    find(dbObject, 'notifications', { notified: false }),
-    getAvailabilities(nameFilter),
-  ]).then(([dbRes, array]) => {
-    const currentOffices = getOfficesQuota(array, 'MO_ID', offices);
-    const mappedOffices = offices.reduce((sum, cur) => {
-      const { MO_ID, MO_NAME } = cur;
+  const checkAvailabilities = (dbObject, nameFilter) => {
+    if (NODE_ENV === 'production') {
+      return Promise.all([
+        find(dbObject, 'notifications', { notified: false }),
+        getAvailabilities(nameFilter),
+      ]).then(([dbRes, array]) => {
+        const currentOffices = getOfficesQuota(array, 'MO_ID', offices);
+        const mappedOffices = offices.reduce((sum, cur) => {
+          const { MO_ID, MO_NAME } = cur;
 
-      return Object.assign(sum, { [MO_ID]: MO_NAME });
-    }, {});
+          return Object.assign(sum, { [MO_ID]: MO_NAME });
+        }, {});
 
-    if (dbRes.data.length) {
-      const updatedIDs = [];
+        if (dbRes.data.length) {
+          const updatedIDs = [];
+          const expiredIDs = [];
 
-      dbRes.data.forEach(({
-        _id: id,
-        mo_id: moID,
-        // session,
-        start_date: innerStart,
-        end_date: innerEnd, email,
-      }) => {
-        if (currentOffices[moID]) {
-          const includedDates = [];
+          dbRes.data.forEach(({
+            _id: id,
+            mo_id: moID,
+            // session,
+            start_date: innerStart,
+            end_date: innerEnd,
+            email,
+          }) => {
+            if (currentOffices[moID]) {
+              if (isBefore(innerStart, new Date()) && isBefore(innerEnd, new Date())) {
+                // Check if expired
+                expiredIDs.push(id);
+              } else {
+                // Not expired yet, because one of there is an intersection
+                // from either innerStart and innerEnd
+                const includedDates = [];
 
-          Object.keys(currentOffices[moID]).forEach((date) => {
-            if (isBetween(innerStart, innerEnd, date)) {
-              const { morning, afternoon } = currentOffices[moID][date];
+                Object.keys(currentOffices[moID]).forEach((date) => {
+                  if (isBetween(innerStart, innerEnd, date)) {
+                    // If not expired
+                    const { morning, afternoon } = currentOffices[moID][date];
 
-              includedDates.push({ date, morning, afternoon });
+                    includedDates.push({ date, morning, afternoon });
+                  }
+                });
+
+                if (includedDates.length) {
+                  sendMail(email, mappedOffices[moID], includedDates);
+                  updatedIDs.push(id);
+                }
+              }
             }
           });
 
-          if (includedDates.length) {
-            sendMail(email, mappedOffices[moID], includedDates);
-            updatedIDs.push(id);
-          }
+          // Update emailed IDs
+          updateMany(
+            dbObject, 'notifications',
+            { _id: { $in: updatedIDs } },
+            { $set: { notified: true, active: false } }
+          );
+
+          // Update expired IDs
+          updateMany(
+            dbObject, 'notifications',
+            { _id: { $in: expiredIDs } },
+            { $set: { active: false } }
+          );
+        } else {
+          winstonInfo('No users need to be notified at the moment.');
         }
       });
-
-      updateMany(
-        dbObject, 'notifications',
-        { _id: { $in: updatedIDs } },
-        { $set: { notified: true } }
-      );
-    } else {
-      winstonInfo('No users need to be notified at the moment.');
     }
-  });
+
+    return Promise.resolve();
+  };
 
   // Main application
   getDatabaseConnection()

@@ -16,16 +16,15 @@ let client;
 beforeAll(() => {
   initNotifRoutes(app);
 
-  promise = getDatabaseConnection();
-
-  return promise.then(({ mongoClient, clientDb }) => {
+  // kenapa harus diassign ke promise baru bisa?
+  return getDatabaseConnection().then(({ mongoClient, clientDb }) => {
     app.locals.db = clientDb;
     db = clientDb;
     client = mongoClient;
   });
 });
 
-afterAll(() => promise.then(({ mongoClient }) => closeDBConnection(mongoClient)));
+afterAll(() => Promise.resolve().then(() => closeDBConnection(client)));
 
 describe('base route (routes/base)', () => {
   beforeAll(() => deleteMany(db, 'notification', {}).then(() => insertMany(
@@ -40,33 +39,37 @@ describe('base route (routes/base)', () => {
         startDate: new Date(2018, 0, 1),
         endDate: new Date(2018, 0, 2),
         notified: true,
+        treshold: 10,
       },
       {
         userID: 1,
         email: 'test@gmail.com',
         moID: 20,
-        session: 'both',
+        session: 'morning',
         startDate: new Date(2018, 0, 2),
         endDate: new Date(2018, 0, 3),
         notified: false,
+        treshold: 35,
       },
       {
         userID: 2,
         email: 'test2@gmail.com',
         moID: 24,
-        session: 'both',
+        session: 'afternoon',
         startDate: new Date(2018, 0, 3),
         endDate: new Date(2018, 0, 4),
         notified: false,
+        treshold: 20,
       },
       {
-        userID: 3,
-        email: 'test3@gmail.com',
+        userID: 2,
+        email: 'test2@gmail.com',
         moID: 20,
         session: 'both',
         startDate: new Date(2018, 0, 3),
         endDate: new Date(2018, 0, 6),
         notified: false,
+        treshold: 25,
       }
     ],
   )));
@@ -110,6 +113,52 @@ describe('base route (routes/base)', () => {
 
           expect(data[0].notified).toBe(false);
         }),
+      // Get notification with minimum treshold
+      request(app)
+        .get('/user/2/notification?notified=false&treshold=22')
+        .expect(200)
+        .then(({ body }) => {
+          const { data, success } = body;
+
+          expect(data.length).toBe(1);
+          expect(success).toBe(true);
+
+          expect(data[0].notified).toBe(false);
+          expect(data[0].treshold).toBe(25);
+        }),
+      // Get notification specific session: afternoon
+      request(app)
+        .get('/user/2/notification?notified=false&session=afternoon')
+        .expect(200)
+        .then(({ body }) => {
+          const { data, success } = body;
+
+          expect(data.length).toBe(1);
+          expect(success).toBe(true);
+
+          expect(data[0].notified).toBe(false);
+          expect(data[0].treshold).toBe(20);
+        }),
+      // Get notification specific session: morning
+      request(app)
+        .get('/user/2/notification?notified=false&session=morning')
+        .expect(200)
+        .then(({ body }) => {
+          const { data, success } = body;
+
+          expect(data.length).toBe(0);
+          expect(success).toBe(true);
+        }),
+      // Get notification specific session: afternoon and treshold more than 20
+      request(app)
+        .get('/user/2/notification?notified=false&session=afternoon&treshold=25')
+        .expect(200)
+        .then(({ body }) => {
+          const { data, success } = body;
+
+          expect(data.length).toBe(0);
+          expect(success).toBe(true);
+        }),
     ]);
   });
 
@@ -139,7 +188,7 @@ describe('base route (routes/base)', () => {
     })
   );
 
-  it('tests route put /user/:userID/notification/:notificationID', () => find(
+  it('tests route PUT /user/:userID/notification/:notificationID', () => find(
       db,
       'notification',
       { userID: 4 }

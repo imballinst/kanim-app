@@ -9,9 +9,11 @@
     "stop": "pm2 stop kanim-app --watch",
     "delete": "pm2 delete kanim-app",
     "log": "pm2 logs kanim-app",
+    "dev": "npm start && npm run log",
     "show": "pm2 show kanim-app",
     "test": "jest && eslint --fix app.js lib/. bin/www routes/.",
-    "test:jest-watch": "jest --watch"
+    "test:jest-watch": "jest --watch",
+    "seed": "node ./db/seeder.js"
   },
   "author": "Try Ajitiono",
   "license": "MIT",
