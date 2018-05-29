@@ -139,6 +139,26 @@ describe('base route (routes/base)', () => {
           expect(data[0].notified).toBe(false);
           expect(data[0].treshold).toBe(20);
         }),
+      // Get notification specific session: morning
+      request(app)
+        .get('/user/2/notification?notified=false&session=morning')
+        .expect(200)
+        .then(({ body }) => {
+          const { data, success } = body;
+
+          expect(data.length).toBe(0);
+          expect(success).toBe(true);
+        }),
+      // Get notification specific session: afternoon and treshold more than 20
+      request(app)
+        .get('/user/2/notification?notified=false&session=afternoon&treshold=25')
+        .expect(200)
+        .then(({ body }) => {
+          const { data, success } = body;
+
+          expect(data.length).toBe(0);
+          expect(success).toBe(true);
+        }),
     ]);
   });
 
