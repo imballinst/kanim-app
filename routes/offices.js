@@ -7,7 +7,7 @@ const {
   postAvailabilityInfo,
   postQuotaInfo,
   postRegisterQueue,
-} = require('../lib/requests');
+} = require('../lib/request');
 
 module.exports = (app) => {
   app.get('/offices', (req, res) => {

@@ -28,7 +28,8 @@
     ],
     "setupFiles": [
       "./scripts/JestSetup.js"
-    ]
+    ],
+    "testEnvironment": "node"
   },
   "pre-commit": [
     "test"
@@ -58,6 +59,7 @@
     "eslint-plugin-jsx-a11y": "^6.0.3",
     "eslint-plugin-react": "^7.5.1",
     "jest": "^22.0.4",
+    "nock": "^9.3.2",
     "pre-commit": "^1.2.2",
     "supertest": "^3.0.0"
   }
