@@ -1,4 +1,4 @@
-box: mongo:3.7-xenial
+box: imballinst/dockerbox-mongodb-nodejs:latest
 test:
   steps:
     - script:
