@@ -11,9 +11,10 @@
     "log": "pm2 logs kanim-app",
     "dev": "npm start && npm run log",
     "show": "pm2 show kanim-app",
-    "test": "jest && eslint --fix app.js lib/. bin/www routes/.",
+    "test": "jest && cross-env eslint --fix app.js lib/. bin/www routes/.",
     "test:jest-watch": "jest --watch",
-    "seed": "node ./db/seeder.js"
+    "db:seed": "cross-env APPLY_SEED=true node ./db/seeder.js",
+    "db:clean": "node ./db/seeder.js"
   },
   "author": "Try Ajitiono",
   "license": "MIT",
@@ -52,6 +53,7 @@
     "babel-cli": "^6.26.0",
     "babel-eslint": "^8.1.2",
     "babel-preset-env": "^1.6.1",
+    "cross-env": "^5.2.0",
     "eslint": "^4.14.0",
     "eslint-config-airbnb": "^16.1.0",
     "eslint-plugin-babel": "^4.1.2",
