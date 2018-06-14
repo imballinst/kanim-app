@@ -6,8 +6,8 @@ test:
     - script:
         name: Start MongoDB
         code: |-
-            whereis mongod
-            service mongod start
+            whereis mongodb
+            sudo service mongodb start
     - create-file:
         name: Create environment variables file
         filename: .env
