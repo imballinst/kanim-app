@@ -6,6 +6,7 @@ test:
         code: |-
             echo '+++ WHERE MONGOD +++'
             whereis mongod
+            sudo mkdir -p /data/db
             sudo mongod
     - create-file:
         name: Create environment variables file
