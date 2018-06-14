@@ -1,35 +1,19 @@
 // Import modules
 const http = require('http');
-const getDate = require('date-fns/getDate');
-const getMonth = require('date-fns/getMonth');
-const getYear = require('date-fns/getYear');
-const isBefore = require('date-fns/isBefore');
-const addMonths = require('date-fns/addMonths');
 const { CronJob } = require('cron');
+const addMonths = require('date-fns/addMonths');
+const format = require('date-fns/format');
 
 // Environment settings
 const app = require('../app');
-const {
-  NODE_ENV,
-  SERVER_PORT,
-  KANIM_USERNAME: username,
-  KANIM_PASSWORD: password,
-} = require('../config/env');
+const { SERVER_PORT } = require('../config/env');
 const { winstonInfo } = require('../lib/logging');
-const { isBetween } = require('../lib/dateUtil');
 const {
-  postAvailabilityInfo,
-  postLogin,
-  postListKanim,
-} = require('../lib/requests');
-const { getOfficesQuota } = require('../lib/quota');
-const {
-  getDatabaseConnection,
-  closeDBConnection,
-  find,
-  updateMany,
-} = require('../lib/mongo');
-const { sendMail } = require('../lib/mail');
+  getCookieAndToken,
+  getFilteredOffices,
+  checkAvailabilities,
+} = require('../lib/processor');
+const { getDatabaseConnection, closeDBConnection } = require('../lib/mongo');
 
 // Routes
 const initRoutes = require('../routes');
@@ -42,122 +26,28 @@ server.listen(portApp, () => {
   winstonInfo(`Listening on port ${portApp}!`);
 
   // Main
-  const startDate = new Date();
-  const startDateObj = {
-    year: getYear(startDate),
-    month: getMonth(startDate),
-    day: getDate(startDate),
-  };
-  const endDate = addMonths(startDate, 1);
-  const endDateObj = {
-    year: getYear(endDate),
-    month: getMonth(endDate),
-    day: getDate(endDate),
-  };
   let cookie;
   let token;
-  let offices;
   let client;
   let db;
 
-  const getCookieAndToken = () => postLogin(undefined, username, password).then((res) => {
-    const [, jSessionID] = res.headers['set-cookie'][0].split(';')[0].split('=');
-    const parsedJSON = JSON.parse(res.data);
-    cookie = jSessionID;
-    token = parsedJSON.Token;
-  });
+  const processAvailabilities = nameFilter => getCookieAndToken()
+    .then(({ cookie: serverCookie, token: serverToken }) => {
+      cookie = serverCookie;
+      token = serverToken;
 
-  const getAvailabilities = nameFilter => getCookieAndToken()
-    .then(() => postListKanim(cookie))
-    .then((res) => {
-      const promises = [];
-      const startParams = `${startDateObj.year}-${startDateObj.month + 1}-${startDateObj.day}`;
-      const endParams = `${endDateObj.year}-${endDateObj.month + 1}-${endDateObj.day}`;
+      return getFilteredOffices(cookie, nameFilter);
+    })
+    .then((offices) => {
+      const startDate = new Date();
+      const endDate = addMonths(startDate, 1);
+      const dates = {
+        startDate: format(startDate, 'YYYY-M-D'),
+        endDate: format(endDate, 'YYYY-M-D'),
+      };
 
-      offices = res.data.Offices.filter(({ MO_NAME }) => MO_NAME.includes(nameFilter));
-
-      offices.forEach(({ MO_ID }) => {
-        promises.push(postAvailabilityInfo(cookie, token, MO_ID, startParams, endParams));
-      });
-
-      const officeNames = offices.map(({ MO_NAME }) => MO_NAME).join(', ');
-      winstonInfo(`Checking availabilities for ${officeNames}...`);
-
-      return Promise.all(promises);
+      return checkAvailabilities(db, cookie, token, offices, dates);
     });
-
-  const checkAvailabilities = (dbObject, nameFilter) => {
-    if (NODE_ENV === 'production') {
-      return Promise.all([
-        find(dbObject, 'notifications', { notified: false }),
-        getAvailabilities(nameFilter),
-      ]).then(([dbRes, array]) => {
-        const currentOffices = getOfficesQuota(array, 'MO_ID', offices);
-        const mappedOffices = offices.reduce((sum, cur) => {
-          const { MO_ID, MO_NAME } = cur;
-
-          return Object.assign(sum, { [MO_ID]: MO_NAME });
-        }, {});
-
-        if (dbRes.data.length) {
-          const updatedIDs = [];
-          const expiredIDs = [];
-
-          dbRes.data.forEach(({
-            _id: id,
-            mo_id: moID,
-            // session,
-            start_date: innerStart,
-            end_date: innerEnd,
-            email,
-          }) => {
-            if (currentOffices[moID]) {
-              if (isBefore(innerStart, new Date()) && isBefore(innerEnd, new Date())) {
-                // Check if expired
-                expiredIDs.push(id);
-              } else {
-                // Not expired yet, because one of there is an intersection
-                // from either innerStart and innerEnd
-                const includedDates = [];
-
-                Object.keys(currentOffices[moID]).forEach((date) => {
-                  if (isBetween(innerStart, innerEnd, date)) {
-                    // If not expired
-                    const { morning, afternoon } = currentOffices[moID][date];
-
-                    includedDates.push({ date, morning, afternoon });
-                  }
-                });
-
-                if (includedDates.length) {
-                  sendMail(email, mappedOffices[moID], includedDates);
-                  updatedIDs.push(id);
-                }
-              }
-            }
-          });
-
-          // Update emailed IDs
-          updateMany(
-            dbObject, 'notifications',
-            { _id: { $in: updatedIDs } },
-            { $set: { notified: true, active: false } }
-          );
-
-          // Update expired IDs
-          updateMany(
-            dbObject, 'notifications',
-            { _id: { $in: expiredIDs } },
-            { $set: { active: false } }
-          );
-        } else {
-          winstonInfo('No users need to be notified at the moment.');
-        }
-      });
-    }
-
-    return Promise.resolve();
-  };
 
   // Main application
   getDatabaseConnection()
@@ -171,7 +61,7 @@ server.listen(portApp, () => {
     .then(() => {
       const job = new CronJob(
         '0 0-59/4 * * * *',
-        () => checkAvailabilities(db, 'karta'),
+        () => processAvailabilities('karta'),
         () => closeDBConnection(client),
         true,
         'Asia/Jakarta'

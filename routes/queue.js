@@ -3,7 +3,7 @@ const {
   postCheckSession,
   postListQueue,
   postCancelQueue,
-} = require('../lib/requests');
+} = require('../lib/request');
 
 module.exports = (app) => {
   app.get('/queue', (req, res) => {

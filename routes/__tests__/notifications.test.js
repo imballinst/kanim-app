@@ -1,22 +1,20 @@
-const request = require('supertest');
+import request from 'supertest';
 
-const {
+import {
   getDatabaseConnection,
   closeDBConnection,
   deleteMany,
   insertMany,
   find,
-} = require('../../lib/mongo');
-const app = require('../../app');
-const initNotifRoutes = require('../notifications');
-let promise;
+} from '../../lib/mongo';
+import app from '../../app';
+import initNotifRoutes from '../notifications';
 let db;
 let client;
 
 beforeAll(() => {
   initNotifRoutes(app);
 
-  // kenapa harus diassign ke promise baru bisa?
   return getDatabaseConnection().then(({ mongoClient, clientDb }) => {
     app.locals.db = clientDb;
     db = clientDb;
@@ -24,7 +22,7 @@ beforeAll(() => {
   });
 });
 
-afterAll(() => Promise.resolve().then(() => closeDBConnection(client)));
+afterAll(() => closeDBConnection(client));
 
 describe('base route (routes/base)', () => {
   beforeAll(() => deleteMany(db, 'notification', {}).then(() => insertMany(
@@ -39,6 +37,7 @@ describe('base route (routes/base)', () => {
         startDate: new Date(2018, 0, 1),
         endDate: new Date(2018, 0, 2),
         notified: true,
+        expired: true,
         treshold: 10,
       },
       {
@@ -49,6 +48,7 @@ describe('base route (routes/base)', () => {
         startDate: new Date(2018, 0, 2),
         endDate: new Date(2018, 0, 3),
         notified: false,
+        expired: false,
         treshold: 35,
       },
       {
@@ -59,6 +59,7 @@ describe('base route (routes/base)', () => {
         startDate: new Date(2018, 0, 3),
         endDate: new Date(2018, 0, 4),
         notified: false,
+        expired: false,
         treshold: 20,
       },
       {
@@ -69,6 +70,7 @@ describe('base route (routes/base)', () => {
         startDate: new Date(2018, 0, 3),
         endDate: new Date(2018, 0, 6),
         notified: false,
+        expired: false,
         treshold: 25,
       }
     ],

@@ -1,4 +1,4 @@
-const { postLogin } = require('../lib/requests');
+const { postLogin } = require('../lib/request');
 const { parseJSONIfString } = require('../lib/objectUtil');
 
 module.exports = (app) => {
