@@ -3,6 +3,11 @@ services:
    - id: mongo
 test:
   steps:
+    - script:
+        name: Start MongoDB
+        code: |-
+            whereis mongod
+            service mongod start
     - create-file:
         name: Create environment variables file
         filename: .env
