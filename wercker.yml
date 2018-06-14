@@ -6,7 +6,7 @@ test:
         code: |-
             echo '+++ WHERE MONGOD +++'
             whereis mongod
-            sudo service mongod start
+            sudo service mongodb start
             echo '+++ WHERE MONGODB +++'
             whereis mongodb
             sudo service mongodb start
