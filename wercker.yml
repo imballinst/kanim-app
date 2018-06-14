@@ -1,11 +1,13 @@
-box: node:carbon
-services:
-   - id: mongo
+box: imballinst/dockerbox-mongodb-nodejs:latest
 test:
   steps:
     - script:
         name: Start MongoDB
         code: |-
+            echo '+++ WHERE MONGOD +++'
+            whereis mongod
+            sudo service mongod start
+            echo '+++ WHERE MONGODB +++'
             whereis mongodb
             sudo service mongodb start
     - create-file:
