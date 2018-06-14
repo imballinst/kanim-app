@@ -6,10 +6,7 @@ test:
         code: |-
             echo '+++ WHERE MONGOD +++'
             whereis mongod
-            sudo service mongodb start
-            echo '+++ WHERE MONGODB +++'
-            whereis mongodb
-            sudo service mongodb start
+            sudo mongod
     - create-file:
         name: Create environment variables file
         filename: .env
