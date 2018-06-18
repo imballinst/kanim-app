@@ -109,7 +109,7 @@ module.exports = (app) => {
         if (Success && jumlah < 5) {
           return postQuotaInfo(undefined, token, req.params.officeID, date, startHour, endHour);
         } else if (Success && jumlah === 5) {
-          return { data: { Message: 'Kuota habis', errorCode: 400 }};
+          return { data: { Message: 'Kuota habis', errorCode: 400 } };
         }
 
         return { data: { Message, errorCode: 401 } };
@@ -157,7 +157,7 @@ module.exports = (app) => {
         if (Success && jumlah < 5) {
           return postRegisterQueue(undefined, applicantCount, token, userID, timingID, name, nik);
         } else if (Success && jumlah === 5) {
-          return { data: { Message: 'Kuota habis', errorCode: 400 }};
+          return { data: { Message: 'Kuota habis', errorCode: 400 } };
         }
 
         return { data: { Message, errorCode: 401 } };
