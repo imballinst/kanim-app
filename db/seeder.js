@@ -21,7 +21,7 @@ getDatabaseConnection().then(({ mongoClient, clientDb }) => {
         'notifications',
         [
           {
-            userID: 1,
+            userID: '1',
             email: SEEDER_EMAIL,
             moID: 20,
             session: 'both',
@@ -31,7 +31,7 @@ getDatabaseConnection().then(({ mongoClient, clientDb }) => {
             treshold: 10,
           },
           {
-            userID: 1,
+            userID: '1',
             email: SEEDER_EMAIL,
             moID: 20,
             session: 'morning',
@@ -41,7 +41,7 @@ getDatabaseConnection().then(({ mongoClient, clientDb }) => {
             treshold: 35,
           },
           {
-            userID: 2,
+            userID: '2',
             email: SEEDER_EMAIL,
             moID: 24,
             session: 'afternoon',
@@ -51,7 +51,7 @@ getDatabaseConnection().then(({ mongoClient, clientDb }) => {
             treshold: 20,
           },
           {
-            userID: 3,
+            userID: '3',
             email: SEEDER_EMAIL,
             moID: 20,
             session: 'both',
