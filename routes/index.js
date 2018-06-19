@@ -1,6 +1,6 @@
-const omit = require('lodash/omit');
+const expressWinston = require('express-winston');
+const winston = require('winston');
 
-const { winstonInfo } = require('../lib/logging');
 const { NODE_ENV } = require('../config/env');
 
 const initNotifRoutes = require('./notifications');
@@ -10,18 +10,16 @@ const initAuthRoutes = require('./auth');
 
 module.exports = (app) => {
   if (NODE_ENV !== 'test') {
-    app.use((req, _res, next) => {
-      const { method, baseUrl, path, query, body } = req;
-      let data = method === 'GET' ? query : body;
-
-      // delete password logging
-      if (data && data.password) {
-        data = omit(data, 'password');
-      }
-
-      winstonInfo(`[kanim-app] ${method} ${baseUrl}${path} ${JSON.stringify(data)}`);
-      next();
-    });
+    app.use(expressWinston.logger({
+      transports: [
+        new winston.transports.Console({
+          json: true,
+          colorize: true,
+        }),
+      ],
+      expressFormat: true, // Use the default Express/morgan request formatting. Enabling this will override any msg if true. Will only output colors with colorize set to true
+      colorize: false, // Color the text and status code, using the Express/morgan color palette (text: gray, status: default green, 3XX cyan, 4XX yellow, 5XX red).
+    }));
   }
 
   initNotifRoutes(app);
