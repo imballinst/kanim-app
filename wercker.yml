@@ -1,6 +1,11 @@
-box: imballinst/dockerbox-mongodb-nodejs:entrypoint
+box: imballinst/dockerbox-mongodb-nodejs:latest
 test:
   steps:
+    - script:
+        name: Start MongoDB
+        code: |-
+            sudo mkdir -p /data/db
+            sudo mongod &
     - create-file:
         name: Create environment variables file
         filename: .env
