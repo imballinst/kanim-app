@@ -6,6 +6,8 @@ test:
         code: |-
             echo '+++ WHERE MONGOD +++'
             whereis mongod
+            systemctl status mongod
+            systemctl status mongodb
     - create-file:
         name: Create environment variables file
         filename: .env
