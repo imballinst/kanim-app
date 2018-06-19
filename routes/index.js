@@ -1,3 +1,5 @@
+const omit = require('lodash/omit');
+
 const { winstonInfo } = require('../lib/logging');
 const { NODE_ENV } = require('../config/env');
 
@@ -8,16 +10,16 @@ const initAuthRoutes = require('./auth');
 
 module.exports = (app) => {
   if (NODE_ENV !== 'test') {
-    app.use((req, res, next) => {
-      const { method, originalUrl, query, body } = req;
-      const data = method === 'GET' ? query : body;
+    app.use((req, _res, next) => {
+      const { method, baseUrl, path, query, body } = req;
+      let data = method === 'GET' ? query : body;
 
       // delete password logging
       if (data && data.password) {
-        delete data.password;
+        data = omit(data, 'password');
       }
 
-      winstonInfo(`[kanim-app] ${method} ${originalUrl} ${JSON.stringify(data)}`);
+      winstonInfo(`[kanim-app] ${method} ${baseUrl}${path} ${JSON.stringify(data)}`);
       next();
     });
   }
