@@ -11,7 +11,7 @@ module.exports = (app) => {
     const { notified, treshold, session = 'both' } = req.query;
 
     const queryObject = {
-      userID: parseInt(req.params.userID, 10),
+      userID: req.params.userID,
       session: {
         $in: session === 'both' ? ['both', 'morning', 'afternoon'] : [session],
       },
@@ -36,13 +36,15 @@ module.exports = (app) => {
   });
 
   app.post('/user/:userID/notification', (req, res) => {
+    const { userID } = req.params;
+
     // add new notification
     res.set('Content-Type', 'application/json');
 
     insertOne(
       app.locals.db,
       'notification',
-      Object.assign({}, req.body, { notified: false })
+      Object.assign({}, req.body, { userID, notified: false, expired: false })
     )
       .then(({ data }) => res.send({ success: true, data }))
       .catch(err => res.send({ success: false, message: err }));
