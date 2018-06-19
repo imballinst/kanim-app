@@ -1,4 +1,4 @@
-box: imballinst/dockerbox-mongodb-nodejs:feat-systemctl
+box: imballinst/dockerbox-mongodb-nodejs:latest
 test:
   steps:
     - script:
@@ -6,6 +6,8 @@ test:
         code: |-
             echo '+++ WHERE MONGOD +++'
             whereis mongod
+            sudo mkdir -p /data/db
+            sudo mongod &
     - create-file:
         name: Create environment variables file
         filename: .env
