@@ -239,4 +239,28 @@ describe('base route (routes/base)', () => {
         });
     })
   );
+
+  it('tests route DELETE /user/:userID/notification/:notificationID', () => find(
+      db,
+      'notification',
+      { userID: '4' }
+    ).then(({ data }) => {
+      const notificationID = data[0]._id.toString();
+
+      return request(app)
+        .delete(`/user/4/notification/${notificationID}`)
+        .expect(200)
+        .then(({ body }) => {
+          const { success, data } = body;
+
+          expect(success).toBe(true);
+
+          return find(db, 'notification', { userID: '4' });
+        })
+        .then(({ success, data }) => {
+          expect(success).toBe(true);
+          expect(data.length).toBe(0);
+        });
+    })
+  );
 });

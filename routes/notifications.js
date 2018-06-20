@@ -1,7 +1,9 @@
 const { ObjectId } = require('mongodb');
 
 // const { winstonInfo } = require('../lib/logging');
-const { find, insertOne, updateOne } = require('../lib/mongo');
+const {
+  find, insertOne, updateOne, deleteOne,
+} = require('../lib/mongo');
 
 module.exports = (app) => {
   app.get('/user/:userID/notification', (req, res) => {
@@ -72,6 +74,19 @@ module.exports = (app) => {
       'notification',
       { _id: ObjectId(req.params.notificationID) },
       { $set: req.body }
+    )
+      .then(({ data }) => res.send({ success: true, data }))
+      .catch(err => res.send({ success: false, message: err }));
+  });
+
+  app.delete('/user/:userID/notification/:notificationID', (req, res) => {
+    // update a notification
+    res.set('Content-Type', 'application/json');
+
+    deleteOne(
+      app.locals.db,
+      'notification',
+      { _id: ObjectId(req.params.notificationID) }
     )
       .then(({ data }) => res.send({ success: true, data }))
       .catch(err => res.send({ success: false, message: err }));
