@@ -50,6 +50,19 @@ module.exports = (app) => {
       .catch(err => res.send({ success: false, message: err }));
   });
 
+  app.get('/user/:userID/notification/:notificationID', (req, res) => {
+    // update a notification
+    res.set('Content-Type', 'application/json');
+
+    find(
+      app.locals.db,
+      'notification',
+      { _id: ObjectId(req.params.notificationID) }
+    )
+      .then(({ data }) => res.send({ success: true, data: data[0] }))
+      .catch(err => res.send({ success: false, message: err }));
+  });
+
   app.put('/user/:userID/notification/:notificationID', (req, res) => {
     // update a notification
     res.set('Content-Type', 'application/json');

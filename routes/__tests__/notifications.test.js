@@ -190,6 +190,27 @@ describe('base route (routes/base)', () => {
     })
   );
 
+  it('tests route GET /user/:userID/notification/:notificationID', () => find(
+      db,
+      'notification',
+      { userID: '4' }
+    ).then(({ data }) => {
+      const notificationID = data[0]._id.toString();
+
+      return request(app)
+        .get(`/user/4/notification/${notificationID}`)
+        .expect(200)
+        .then(({ body }) => {
+          const { success, data } = body;
+
+          expect(success).toBe(true);
+          expect(data.userID).toBe('4');
+          expect(data.email).toBe('test4@gmail.com');
+          expect(data.notified).toBe(false);
+        });
+    })
+  );
+
   it('tests route PUT /user/:userID/notification/:notificationID', () => find(
       db,
       'notification',
