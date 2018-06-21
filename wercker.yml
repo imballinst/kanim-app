@@ -4,6 +4,7 @@ test:
     - script:
         name: Start MongoDB
         code: |-
+            ls -l /usr/bin/ssh
             sudo mkdir -p /data/db
             sudo mongod &
     - create-file:
