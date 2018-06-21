@@ -1,4 +1,6 @@
-## kanim-app [Status: WIP Prototype]
+## kanim-app [Status: Prototype]
+
+[![wercker status](https://app.wercker.com/status/f75df002ca90a6b7d8639f5efc8fb188/s/ "wercker status")](https://app.wercker.com/project/byKey/f75df002ca90a6b7d8639f5efc8fb188)
 
 Sometimes, it is really annoying to refresh https://antrian.imigrasi.go.id/ over time in order to do online registration. I don't want to repeat that kind of time-wasting action, so instead, I reverse-engineered their website and intended to build a brand new application.
 

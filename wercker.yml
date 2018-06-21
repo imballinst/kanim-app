@@ -1,0 +1,31 @@
+box: imballinst/dockerbox-mongodb-nodejs:latest
+test:
+  steps:
+    - script:
+        name: Start MongoDB
+        code: |-
+            sudo mkdir -p /data/db
+            sudo mongod &
+    - create-file:
+        name: Create environment variables file
+        filename: .env
+        overwrite: true
+        content: |-
+          MONGO_URL=mongodb://localhost:27017
+          MONGO_TEST_DATABASE=kanim_app_test
+          SENDGRID_API_KEY=$SENDGRID_API_KEY
+    - npm-install
+    - npm-test
+deploy_backend:
+  steps:
+    - mktemp:
+        envvar: PRIVATEKEY_PATH
+    - create-file:
+        name: write key
+        filename: $PRIVATEKEY_PATH
+        content: $kanimApp_PRIVATE
+        overwrite: true
+        hide-from-log: true
+    - script:
+        name: ssh and deploy on remote server
+        code: ssh -i $PRIVATEKEY_PATH $SERVER_LOGIN '~/script/deploy_kanimApp'

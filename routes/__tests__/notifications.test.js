@@ -30,7 +30,7 @@ describe('base route (routes/base)', () => {
     'notification',
     [
       {
-        userID: 1,
+        userID: '1',
         email: 'test@gmail.com',
         moID: 20,
         session: 'both',
@@ -41,7 +41,7 @@ describe('base route (routes/base)', () => {
         treshold: 10,
       },
       {
-        userID: 1,
+        userID: '1',
         email: 'test@gmail.com',
         moID: 20,
         session: 'morning',
@@ -52,7 +52,7 @@ describe('base route (routes/base)', () => {
         treshold: 35,
       },
       {
-        userID: 2,
+        userID: '2',
         email: 'test2@gmail.com',
         moID: 24,
         session: 'afternoon',
@@ -63,7 +63,7 @@ describe('base route (routes/base)', () => {
         treshold: 20,
       },
       {
-        userID: 2,
+        userID: '2',
         email: 'test2@gmail.com',
         moID: 20,
         session: 'both',
@@ -165,9 +165,9 @@ describe('base route (routes/base)', () => {
   });
 
   it('tests route POST /user/:userID/notification', () => request(app)
-    .post('/user/1/notification')
+    .post('/user/4/notification')
     .send({
-      userID: 4,
+      userID: '4',
       email: 'test4@gmail.com',
       moID: 20,
       session: 'both',
@@ -180,20 +180,41 @@ describe('base route (routes/base)', () => {
 
       expect(success).toBe(true);
 
-      return find(db, 'notification', { userID: 4 });
+      return find(db, 'notification', { userID: '4' });
     })
     .then(({ success, data }) => {
       expect(success).toBe(true);
-      expect(data[0].userID).toBe(4);
+      expect(data[0].userID).toBe('4');
       expect(data[0].email).toBe('test4@gmail.com');
       expect(data[0].notified).toBe(false);
+    })
+  );
+
+  it('tests route GET /user/:userID/notification/:notificationID', () => find(
+      db,
+      'notification',
+      { userID: '4' }
+    ).then(({ data }) => {
+      const notificationID = data[0]._id.toString();
+
+      return request(app)
+        .get(`/user/4/notification/${notificationID}`)
+        .expect(200)
+        .then(({ body }) => {
+          const { success, data } = body;
+
+          expect(success).toBe(true);
+          expect(data.userID).toBe('4');
+          expect(data.email).toBe('test4@gmail.com');
+          expect(data.notified).toBe(false);
+        });
     })
   );
 
   it('tests route PUT /user/:userID/notification/:notificationID', () => find(
       db,
       'notification',
-      { userID: 4 }
+      { userID: '4' }
     ).then(({ data }) => {
       const notificationID = data[0]._id.toString();
 
@@ -208,13 +229,37 @@ describe('base route (routes/base)', () => {
 
           expect(success).toBe(true);
 
-          return find(db, 'notification', { userID: 4 });
+          return find(db, 'notification', { userID: '4' });
         })
         .then(({ success, data }) => {
           expect(success).toBe(true);
-          expect(data[0].userID).toBe(4);
+          expect(data[0].userID).toBe('4');
           expect(data[0].email).toBe('test4@gmail.com');
           expect(data[0].notified).toBe(true);
+        });
+    })
+  );
+
+  it('tests route DELETE /user/:userID/notification/:notificationID', () => find(
+      db,
+      'notification',
+      { userID: '4' }
+    ).then(({ data }) => {
+      const notificationID = data[0]._id.toString();
+
+      return request(app)
+        .delete(`/user/4/notification/${notificationID}`)
+        .expect(200)
+        .then(({ body }) => {
+          const { success, data } = body;
+
+          expect(success).toBe(true);
+
+          return find(db, 'notification', { userID: '4' });
+        })
+        .then(({ success, data }) => {
+          expect(success).toBe(true);
+          expect(data.length).toBe(0);
         });
     })
   );

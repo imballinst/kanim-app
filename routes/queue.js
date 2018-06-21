@@ -16,14 +16,17 @@ module.exports = (app) => {
       res.send(response);
     } else {
       postCheckSession(undefined, token).then(({ data }) => {
-        const { Success, Message } = parseJSONIfString(data);
+        const { Success, Message, jumlah } = parseJSONIfString(data);
 
         if (Success) {
-          return postListQueue(undefined, token, userID);
+          return Promise.all([
+            postListQueue(undefined, token, userID),
+            jumlah,
+          ]);
         }
 
         return { data: { Message, errorCode: 401 } };
-      }).then(({ data }) => {
+      }).then(([{ data }, queuesUsed]) => {
         const {
           Success, Message, Queues, errorCode,
         } = parseJSONIfString(data);
@@ -31,7 +34,7 @@ module.exports = (app) => {
         res.set('Content-Type', 'application/json');
 
         if (!Message || Success) {
-          response.data = Queues;
+          response.data = { queues: Queues, queuesUsed };
           response.success = true;
         } else {
           response.message = Message;
