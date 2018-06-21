@@ -26,8 +26,11 @@ test:
         overwrite: true
         hide-from-log: true
     - script:
+        name: add to known hosts
+        code: ssh-keyscan -t rsa $SERVER_IP > /root/.ssh/known_hosts
+    - script:
         name: ssh and deploy on remote server
-        code: ssh -i $PRIVATEKEY_PATH $SERVER_LOGIN '~/script/deploy_kanimApp'
+        code: ssh -i $PRIVATEKEY_PATH $SERVER_USERNAME:$SERVER_IP '~/script/deploy_kanimApp'
 deploy_backend:
   steps:
     - mktemp:
@@ -40,4 +43,4 @@ deploy_backend:
         hide-from-log: true
     - script:
         name: ssh and deploy on remote server
-        code: ssh -i $PRIVATEKEY_PATH $SERVER_LOGIN '~/script/deploy_kanimApp'
+        code: ssh -i $PRIVATEKEY_PATH $SERVER_USERNAME:$SERVER_IP '~/script/deploy_kanimApp'
