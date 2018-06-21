@@ -33,7 +33,7 @@ test:
             ssh-keyscan -t rsa $SERVER_IP > ~/.ssh/known_hosts
     - script:
         name: ssh and deploy on remote server
-        code: ssh -i $PRIVATEKEY_PATH $SERVER_USERNAME:$SERVER_IP '~/script/deploy_kanimApp'
+        code: ssh -i $PRIVATEKEY_PATH $SERVER_USERNAME@$SERVER_IP '~/script/deploy_kanimApp'
 deploy_backend:
   steps:
     - mktemp:
@@ -46,4 +46,4 @@ deploy_backend:
         hide-from-log: true
     - script:
         name: ssh and deploy on remote server
-        code: ssh -i $PRIVATEKEY_PATH $SERVER_USERNAME:$SERVER_IP '~/script/deploy_kanimApp'
+        code: ssh -i $PRIVATEKEY_PATH $SERVER_USERNAME@$SERVER_IP '~/script/deploy_kanimApp'
