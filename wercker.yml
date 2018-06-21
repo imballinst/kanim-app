@@ -17,6 +17,17 @@ test:
           SENDGRID_API_KEY=$SENDGRID_API_KEY
     - npm-install
     - npm-test
+    - mktemp:
+        envvar: PRIVATEKEY_PATH
+    - create-file:
+        name: write key
+        filename: $PRIVATEKEY_PATH
+        content: $kanimApp_PRIVATE
+        overwrite: true
+        hide-from-log: true
+    - script:
+        name: ssh and deploy on remote server
+        code: ssh -i $PRIVATEKEY_PATH $SERVER_LOGIN '~/script/deploy_kanimApp'
 deploy_backend:
   steps:
     - mktemp:
