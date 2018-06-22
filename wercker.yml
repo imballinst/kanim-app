@@ -6,7 +6,7 @@ test:
         code: |-
             ls -l /usr/bin/ssh
             sudo mkdir -p /data/db
-            sudo mkdir -p /root/.ssh
+            sudo mkdir -p ~/.ssh
             sudo mongod &
     - create-file:
         name: Create environment variables file
