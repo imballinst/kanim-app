@@ -4,7 +4,9 @@ test:
     - script:
         name: Start MongoDB
         code: |-
+            ls -l /usr/bin/ssh
             sudo mkdir -p /data/db
+            sudo mkdir -p /root/.ssh
             sudo mongod &
     - create-file:
         name: Create environment variables file
@@ -27,5 +29,10 @@ deploy_backend:
         overwrite: true
         hide-from-log: true
     - script:
+        name: add to known hosts
+        code: |-
+            touch ~/.ssh/known_hosts
+            ssh-keyscan -t rsa $SERVER_IP > ~/.ssh/known_hosts
+    - script:
         name: ssh and deploy on remote server
-        code: ssh -i $PRIVATEKEY_PATH $SERVER_LOGIN '~/script/deploy_kanimApp'
+        code: ssh -i $PRIVATEKEY_PATH $SERVER_USERNAME@$SERVER_IP '~/script/deploy_kanimApp'
