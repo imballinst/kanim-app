@@ -23,9 +23,9 @@ module.exports = (app) => {
       }
 
       res.send(response);
-    }).catch(err => res.send({
+    }).catch(({ message }) => res.send({
       success: false,
-      message: err,
-    }));
+      message,
+    }))
   });
 };

@@ -42,10 +42,7 @@ module.exports = (app) => {
         }
 
         res.send(response);
-      }).catch(err => res.send({
-        success: false,
-        message: err,
-      }));
+      }).catch(({ message }) => res.send({ success: false, message }));
     }
   });
 
@@ -84,10 +81,7 @@ module.exports = (app) => {
         }
 
         res.send(response);
-      }).catch(err => res.send({
-        success: false,
-        message: err,
-      }));
+      }).catch(({ message }) => res.send({ success: false, message }));
     }
   });
 
@@ -130,10 +124,7 @@ module.exports = (app) => {
         }
 
         res.send(response);
-      }).catch(err => res.send({
-        success: false,
-        message: err,
-      }));
+      }).catch(({ message }) => res.send({ success: false, message }));
     }
   });
 
@@ -175,10 +166,7 @@ module.exports = (app) => {
         }
 
         res.send(response);
-      }).catch(err => res.send({
-        success: false,
-        message: err,
-      }));
+      }).catch(({ message }) => res.send({ success: false, message }));
     }
   });
 };

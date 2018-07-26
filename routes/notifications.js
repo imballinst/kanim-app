@@ -34,7 +34,7 @@ module.exports = (app) => {
       queryObject
     )
       .then(({ data }) => res.send({ success: true, data }))
-      .catch(err => res.send({ success: false, message: err }));
+      .catch(({ message }) => res.send({ success: false, message }));
   });
 
   app.post('/user/:userID/notification', (req, res) => {
@@ -49,7 +49,7 @@ module.exports = (app) => {
       Object.assign({}, req.body, { userID, notified: false, expired: false })
     )
       .then(({ data }) => res.send({ success: true, data }))
-      .catch(err => res.send({ success: false, message: err }));
+      .catch(({ message }) => res.send({ success: false, message }));
   });
 
   app.get('/user/:userID/notification/:notificationID', (req, res) => {
@@ -62,7 +62,7 @@ module.exports = (app) => {
       { _id: ObjectId(req.params.notificationID) }
     )
       .then(({ data }) => res.send({ success: true, data: data[0] }))
-      .catch(err => res.send({ success: false, message: err }));
+      .catch(({ message }) => res.send({ success: false, message }));
   });
 
   app.put('/user/:userID/notification/:notificationID', (req, res) => {
@@ -76,7 +76,7 @@ module.exports = (app) => {
       { $set: req.body }
     )
       .then(({ data }) => res.send({ success: true, data }))
-      .catch(err => res.send({ success: false, message: err }));
+      .catch(({ message }) => res.send({ success: false, message }));
   });
 
   app.delete('/user/:userID/notification/:notificationID', (req, res) => {
@@ -89,6 +89,6 @@ module.exports = (app) => {
       { _id: ObjectId(req.params.notificationID) }
     )
       .then(({ data }) => res.send({ success: true, data }))
-      .catch(err => res.send({ success: false, message: err }));
+      .catch(({ message }) => res.send({ success: false, message }));
   });
 };
