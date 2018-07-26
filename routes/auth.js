@@ -7,8 +7,6 @@ module.exports = (app) => {
     const response = { success: false };
     const { username, password } = req.body;
 
-    res.set('Content-Type', 'application/json');
-
     postLogin(undefined, username, password).then(({ data }) => {
       const {
         Success, Message, Token, errorCode,
