@@ -61,7 +61,7 @@ server.listen(portApp, () => {
     .then(() => {
       const job = new CronJob(
         '0 0-59/4 * * * *',
-        () => processAvailabilities('karta'),
+        () => processAvailabilities(''),
         () => closeDBConnection(client),
         true,
         'Asia/Jakarta'

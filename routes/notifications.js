@@ -30,7 +30,7 @@ module.exports = (app) => {
 
     find(
       app.locals.db,
-      'notification',
+      'notifications',
       queryObject
     )
       .then(({ data }) => res.send({ success: true, data }))
@@ -45,7 +45,7 @@ module.exports = (app) => {
 
     insertOne(
       app.locals.db,
-      'notification',
+      'notifications',
       Object.assign({}, req.body, { userID, notified: false, expired: false })
     )
       .then(({ data }) => res.send({ success: true, data }))
@@ -58,7 +58,7 @@ module.exports = (app) => {
 
     find(
       app.locals.db,
-      'notification',
+      'notifications',
       { _id: ObjectId(req.params.notificationID) }
     )
       .then(({ data }) => res.send({ success: true, data: data[0] }))
@@ -71,7 +71,7 @@ module.exports = (app) => {
 
     updateOne(
       app.locals.db,
-      'notification',
+      'notifications',
       { _id: ObjectId(req.params.notificationID) },
       { $set: req.body }
     )
@@ -85,7 +85,7 @@ module.exports = (app) => {
 
     deleteOne(
       app.locals.db,
-      'notification',
+      'notifications',
       { _id: ObjectId(req.params.notificationID) }
     )
       .then(({ data }) => res.send({ success: true, data }))

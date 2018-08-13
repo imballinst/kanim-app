@@ -25,9 +25,9 @@ beforeAll(() => {
 afterAll(() => closeDBConnection(client));
 
 describe('base route (routes/base)', () => {
-  beforeAll(() => deleteMany(db, 'notification', {}).then(() => insertMany(
+  beforeAll(() => deleteMany(db, 'notifications', {}).then(() => insertMany(
     db,
-    'notification',
+    'notifications',
     [
       {
         userID: '1',
@@ -180,7 +180,7 @@ describe('base route (routes/base)', () => {
 
       expect(success).toBe(true);
 
-      return find(db, 'notification', { userID: '4' });
+      return find(db, 'notifications', { userID: '4' });
     })
     .then(({ success, data }) => {
       expect(success).toBe(true);
@@ -192,7 +192,7 @@ describe('base route (routes/base)', () => {
 
   it('tests route GET /user/:userID/notification/:notificationID', () => find(
       db,
-      'notification',
+      'notifications',
       { userID: '4' }
     ).then(({ data }) => {
       const notificationID = data[0]._id.toString();
@@ -213,7 +213,7 @@ describe('base route (routes/base)', () => {
 
   it('tests route PUT /user/:userID/notification/:notificationID', () => find(
       db,
-      'notification',
+      'notifications',
       { userID: '4' }
     ).then(({ data }) => {
       const notificationID = data[0]._id.toString();
@@ -229,7 +229,7 @@ describe('base route (routes/base)', () => {
 
           expect(success).toBe(true);
 
-          return find(db, 'notification', { userID: '4' });
+          return find(db, 'notifications', { userID: '4' });
         })
         .then(({ success, data }) => {
           expect(success).toBe(true);
@@ -242,7 +242,7 @@ describe('base route (routes/base)', () => {
 
   it('tests route DELETE /user/:userID/notification/:notificationID', () => find(
       db,
-      'notification',
+      'notifications',
       { userID: '4' }
     ).then(({ data }) => {
       const notificationID = data[0]._id.toString();
@@ -255,7 +255,7 @@ describe('base route (routes/base)', () => {
 
           expect(success).toBe(true);
 
-          return find(db, 'notification', { userID: '4' });
+          return find(db, 'notifications', { userID: '4' });
         })
         .then(({ success, data }) => {
           expect(success).toBe(true);

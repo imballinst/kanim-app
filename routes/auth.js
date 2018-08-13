@@ -26,6 +26,6 @@ module.exports = (app) => {
     }).catch(({ message }) => res.send({
       success: false,
       message,
-    }))
+    }));
   });
 };
