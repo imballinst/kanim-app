@@ -12,24 +12,17 @@
     "dev": "npm start && npm run log",
     "show": "pm2 show kanim-app",
     "test": "jest && cross-env eslint --fix app.js lib/. bin/www routes/.",
-    "test:jest-watch": "jest --watch",
+    "test:watch": "jest --watch",
     "db:seed": "cross-env APPLY_SEED=true node ./db/seeder.js",
     "db:clean": "node ./db/seeder.js"
   },
   "author": "Try Ajitiono",
   "license": "MIT",
-  "keywords": [
-    "kanim",
-    "notifikasi"
-  ],
+  "keywords": ["kanim", "notifikasi"],
   "jest": {
     "testRegex": "(/__tests__/.*|\\.(test|spec))\\.(js)$",
-    "moduleFileExtensions": [
-      "js"
-    ],
-    "setupFiles": [
-      "./scripts/JestSetup.js"
-    ],
+    "moduleFileExtensions": ["js"],
+    "setupFiles": ["./scripts/JestSetup.js"],
     "testEnvironment": "node"
   },
   "dependencies": {
