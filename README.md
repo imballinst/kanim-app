@@ -35,9 +35,9 @@ Route | Method | Purpose
 ### How to Use
 
 1. Clone this repository
-2. `npm install`
+2. `yarn install`
 3. Copy `.env.example` to `.env` and fill the variable values
-4. `npm start`
+4. `yarn start`
 
 ### License
 
