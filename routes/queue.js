@@ -1,8 +1,6 @@
 const { parseJSONIfString } = require('../lib/objectUtil');
 const {
-  postCheckSession,
-  postListQueue,
-  postCancelQueue,
+  checkSession, getQueues, registerQueue, deleteQueue,
 } = require('../lib/request');
 
 module.exports = (app) => {
@@ -15,34 +13,79 @@ module.exports = (app) => {
       response.message = 'Please provide token!';
       res.send(response);
     } else {
-      postCheckSession(undefined, token).then(({ data }) => {
-        const { Success, Message, jumlah } = parseJSONIfString(data);
+      checkSession(undefined, token)
+        .then(({ data }) => {
+          const { Success, Message, jumlah } = parseJSONIfString(data);
 
-        if (Success) {
-          return Promise.all([
-            postListQueue(undefined, token, userID),
-            jumlah,
-          ]);
-        }
+          if (Success) {
+            return Promise.all([getQueues(undefined, token, userID), jumlah]);
+          }
 
-        return { data: { Message, errorCode: 401 } };
-      }).then(([{ data }, queuesUsed]) => {
-        const {
-          Success, Message, Queues, errorCode,
-        } = parseJSONIfString(data);
+          return { data: { Message, errorCode: 401 } };
+        })
+        .then(([{ data }, queuesUsed]) => {
+          const {
+            Success, Message, Queues, errorCode,
+          } = parseJSONIfString(data);
 
-        res.set('Content-Type', 'application/json');
+          res.set('Content-Type', 'application/json');
 
-        if (!Message || Success) {
-          response.data = { queues: Queues, queuesUsed };
-          response.success = true;
-        } else {
-          response.message = Message;
-          response.errorCode = errorCode;
-        }
+          if (!Message || Success) {
+            response.data = { queues: Queues, queuesUsed };
+            response.success = true;
+          } else {
+            response.message = Message;
+            response.errorCode = errorCode;
+          }
 
-        res.send(response);
-      }).catch(({ message }) => res.send({ success: false, message }));
+          res.send(response);
+        })
+        .catch(({ message }) => res.send({ success: false, message }));
+    }
+  });
+
+  app.post('/queue', (req, res) => {
+    // get quota for an office
+    const token = req.headers['x-imm-token'];
+    const {
+      applicantCount, userID, timingID, name, nik,
+    } = req.body;
+    const response = { success: false };
+
+    res.set('Content-Type', 'application/json');
+
+    if (!token) {
+      response.message = 'Please provide token!';
+      res.send(response);
+    } else {
+      checkSession(undefined, token)
+        .then(({ data }) => {
+          const { Success, Message, jumlah } = parseJSONIfString(data);
+
+          if (Success && jumlah < 5) {
+            return registerQueue(undefined, applicantCount, token, userID, timingID, name, nik);
+          } else if (Success && jumlah === 5) {
+            return { data: { Message: 'Kuota habis', errorCode: 400 } };
+          }
+
+          return { data: { Message, errorCode: 401 } };
+        })
+        .then(({ data }) => {
+          const {
+            Message, NO_ANTRIAN, Success, errorCode,
+          } = parseJSONIfString(data);
+
+          if (!Message || Success) {
+            response.data = { queueNumber: NO_ANTRIAN };
+            response.success = true;
+          } else {
+            response.message = Message;
+            response.errorCode = errorCode;
+          }
+
+          res.send(response);
+        })
+        .catch(({ message }) => res.send({ success: false, message }));
     }
   });
 
@@ -55,28 +98,31 @@ module.exports = (app) => {
       response.message = 'Please provide token!';
       res.send(response);
     } else {
-      postCheckSession(undefined, token).then(({ data }) => {
-        const { Success, Message } = parseJSONIfString(data);
+      checkSession(undefined, token)
+        .then(({ data }) => {
+          const { Success, Message } = parseJSONIfString(data);
 
-        if (Success) {
-          return postCancelQueue(undefined, queueNumber);
-        }
+          if (Success) {
+            return deleteQueue(undefined, queueNumber);
+          }
 
-        return { data: { Message, errorCode: 401 } };
-      }).then(({ data }) => {
-        const { Success, Message, errorCode } = parseJSONIfString(data);
+          return { data: { Message, errorCode: 401 } };
+        })
+        .then(({ data }) => {
+          const { Success, Message, errorCode } = parseJSONIfString(data);
 
-        res.set('Content-Type', 'application/json');
+          res.set('Content-Type', 'application/json');
 
-        if (!Message || Success) {
-          response.success = true;
-        } else {
-          response.message = Message;
-          response.errorCode = errorCode;
-        }
+          if (!Message || Success) {
+            response.success = true;
+          } else {
+            response.message = Message;
+            response.errorCode = errorCode;
+          }
 
-        res.send(response);
-      }).catch(({ message }) => res.send({ success: false, message }));
+          res.send(response);
+        })
+        .catch(({ message }) => res.send({ success: false, message }));
     }
   });
 };

@@ -1,15 +1,17 @@
-const { postLogin, postRegister, postResetPassword } = require('../lib/request');
+const { login, register, resetPassword } = require('../lib/request');
 const { parseJSONIfString } = require('../lib/objectUtil');
 
-module.exports = app => {
+module.exports = (app) => {
   app.post('/login', (req, res) => {
     // get all notification
     const response = { success: false };
     const { username, password } = req.body;
 
-    postLogin(undefined, username, password)
+    login(undefined, username, password)
       .then(({ data }) => {
-        const { Success, Message, Token, errorCode } = parseJSONIfString(data);
+        const {
+          Success, Message, Token, errorCode,
+        } = parseJSONIfString(data);
 
         res.set('Content-Type', 'application/json');
 
@@ -26,9 +28,8 @@ module.exports = app => {
       .catch(({ message }) =>
         res.send({
           success: false,
-          message
-        })
-      );
+          message,
+        }));
   });
 
   app.post('/signup', (req, res) => {
@@ -39,19 +40,19 @@ module.exports = app => {
       NIK: nik,
       Telephone: phone,
       Email: email,
-      Alamat: address
+      Alamat: address,
     } = req.body;
 
-    postRegister(undefined, {
+    register(undefined, {
       Username: username,
       Password: password,
       NIK: nik,
       Telephone: phone,
       Email: email,
-      Alamat: address
+      Alamat: address,
     })
       .then(({ data }) => {
-        const { Message: message, UserId: userID, Success: success } = data;
+        const { Message: message, Success: success } = data;
 
         if (success) {
           response.success = true;
@@ -64,24 +65,23 @@ module.exports = app => {
       .catch(({ message }) =>
         res.send({
           success: false,
-          message
-        })
-      );
+          message,
+        }));
   });
 
   app.post('/reset_password', (req, res) => {
     const response = { success: false };
     const { request: email } = req.body;
 
-    postRegister(undefined, {
-      request: email
+    resetPassword(undefined, {
+      request: email,
     })
       .then(({ data }) => {
         const { Message: message, data: userData, Success: success } = data;
 
         if (success) {
           response.success = true;
-          response.data = userData[0];
+          [response.data] = userData;
         } else {
           response.message = message;
         }
@@ -91,8 +91,7 @@ module.exports = app => {
       .catch(({ message }) =>
         res.send({
           success: false,
-          message
-        })
-      );
+          message,
+        }));
   });
 };
