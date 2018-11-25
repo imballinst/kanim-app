@@ -11,21 +11,30 @@ Interval registration checking. If you want to register at certain date and time
 ## APIs
 ### Authentication Ruotes
 
-Route | Method | Purpose
+Route | Method | Description
 ----- | ------ | -------
 `/login` | `POST` | Login with body `username` and `password`
 
 ### Office Ruotes
+
+Route | Method | Description
+----- | ------ | -------
 `/offices` | `GET` | Get list of immigration offices
 `/offices/{officeID}` | `GET` | Get the availabilities of an office with `startDate` and `endDate` as time range parameter
 `/offices/{officeID}/check` | `POST` | Confirm the availability of a session in a certain day, given `date`, `startHour`, and `endHour` sent in the request body
 `/offices/{officeID}/register` | `POST` | Register for the booking with the request body `applicantCount`, `userID`, `timingID`, `name`, and `nik`
 
 ### Queue Ruotes
+
+Route | Method | Description
+----- | ------ | -------
 `/queue` | `GET` | Get list of registered bookings
 `/queue/{queueNumber}` | `DELETE` | Delete a booked queue
 
 ### User Ruotes
+
+Route | Method | Description
+----- | ------ | -------
 `/user/{userID}/notification` | `GET` | Get all notification for userID
 `/user/{userID}/notification` | `POST` | Add a new notification for userID
 `/user/{userID}/notification/{notificationID}` | `GET` | Get a notification owned by userID
