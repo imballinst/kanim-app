@@ -1,7 +1,7 @@
 const { login, register, resetPassword } = require('../lib/request');
 const { parseJSONIfString } = require('../lib/objectUtil');
 
-module.exports = (app) => {
+module.exports = app => {
   app.post('/login', (req, res) => {
     // get all notification
     const response = { success: false };
@@ -9,9 +9,7 @@ module.exports = (app) => {
 
     login(undefined, username, password)
       .then(({ data }) => {
-        const {
-          Success, Message, Token, errorCode,
-        } = parseJSONIfString(data);
+        const { Success, Message, Token, errorCode } = parseJSONIfString(data);
 
         res.set('Content-Type', 'application/json');
 
@@ -28,20 +26,14 @@ module.exports = (app) => {
       .catch(({ message }) =>
         res.send({
           success: false,
-          message,
-        }));
+          message
+        })
+      );
   });
 
   app.post('/signup', (req, res) => {
     const response = { success: false };
-    const {
-      Username: username,
-      Password: password,
-      NIK: nik,
-      Telephone: phone,
-      Email: email,
-      Alamat: address,
-    } = req.body;
+    const { username, password, nik, phone, email, address } = req.body;
 
     register(undefined, {
       Username: username,
@@ -49,7 +41,7 @@ module.exports = (app) => {
       NIK: nik,
       Telephone: phone,
       Email: email,
-      Alamat: address,
+      Alamat: address
     })
       .then(({ data }) => {
         const { Message: message, Success: success } = data;
@@ -65,16 +57,17 @@ module.exports = (app) => {
       .catch(({ message }) =>
         res.send({
           success: false,
-          message,
-        }));
+          message
+        })
+      );
   });
 
   app.post('/reset_password', (req, res) => {
     const response = { success: false };
-    const { request: email } = req.body;
+    const { email } = req.body;
 
     resetPassword(undefined, {
-      request: email,
+      request: email
     })
       .then(({ data }) => {
         const { Message: message, data: userData, Success: success } = data;
@@ -91,7 +84,8 @@ module.exports = (app) => {
       .catch(({ message }) =>
         res.send({
           success: false,
-          message,
-        }));
+          message
+        })
+      );
   });
 };
