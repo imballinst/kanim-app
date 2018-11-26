@@ -18,11 +18,18 @@
   },
   "author": "Try Ajitiono",
   "license": "MIT",
-  "keywords": ["kanim", "notifikasi"],
+  "keywords": [
+    "kanim",
+    "notifikasi"
+  ],
   "jest": {
     "testRegex": "(/__tests__/.*|\\.(test|spec))\\.(js)$",
-    "moduleFileExtensions": ["js"],
-    "setupFiles": ["./scripts/JestSetup.js"],
+    "moduleFileExtensions": [
+      "js"
+    ],
+    "setupFiles": [
+      "./scripts/JestSetup.js"
+    ],
     "testEnvironment": "node"
   },
   "dependencies": {
