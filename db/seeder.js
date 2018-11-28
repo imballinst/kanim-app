@@ -59,8 +59,8 @@ getDatabaseConnection().then(({ mongoClient, clientDb }) => {
             endDate: addDays(new Date(), 6),
             notified: false,
             treshold: 25,
-          }
-        ],
+          },
+        ]
       );
     }
 

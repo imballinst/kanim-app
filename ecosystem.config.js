@@ -2,10 +2,10 @@
 module.exports = {
   apps: [
     {
-      name: "kanim-app",
-      script: "./bin/www",
+      name: 'kanim-app',
+      script: './bin/www',
       watch: true,
-      ignore_watch: [".git/"]
-    }
-  ]
-}
+      ignore_watch: ['.git/'],
+    },
+  ],
+};
