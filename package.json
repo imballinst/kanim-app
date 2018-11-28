@@ -11,7 +11,7 @@
     "log": "pm2 logs kanim-app",
     "dev": "npm start && npm run log",
     "show": "pm2 show kanim-app",
-    "test": "jest && cross-env eslint --fix app.js lib/. bin/www routes/.",
+    "test": "jest && cross-env eslint . --fix --ext .js",
     "test:watch": "jest --watch",
     "db:seed": "cross-env APPLY_SEED=true node ./db/seeder.js",
     "db:clean": "node ./db/seeder.js"
